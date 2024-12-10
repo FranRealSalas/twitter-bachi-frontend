@@ -33,18 +33,22 @@ const SearchBar = () => {
     return (
         <div className="flex justify-center w-full py-1">
             <div className="flex flex-col w-3/5 gap-1">
-                <input
-                    type="text"
-                    className="w-full h-8 rounded-xl bg-gray-700 outline-none px-2"
-                    placeholder={`${"LUPA"} Buscar`}
-
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onClick={() => {
-                        setOpenModal(true);
-                        setOpenSearchBar(true);
-                    }}
-                />
+                <div className="relative w-full">
+                    <span className="absolute flex left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <i className="material-symbols-outlined">search</i>
+                    </span>
+                    <input
+                        type="text"
+                        className="w-full h-8 rounded-xl bg-gray-700 outline-none px-10"  // Se ajusta el padding a la izquierda
+                        placeholder="Buscar"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        onClick={() => {
+                            setOpenModal(true);
+                            setOpenSearchBar(true);
+                        }}
+                    />
+                </div>
                 <div className="w-full">
                     {openSearchBar ? (
                         filteredUsers && filteredUsers.length > 0 ? (
