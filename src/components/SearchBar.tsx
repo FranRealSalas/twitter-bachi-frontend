@@ -32,14 +32,14 @@ const SearchBar = () => {
 
     return (
         <div className="flex justify-center w-full py-1">
-            <div className="flex flex-col w-3/5 gap-1">
+            <div className="flex flex-col gap-1">
                 <div className="relative w-full">
-                    <span className="absolute flex left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <span className="absolute flex left-2 top-1/2 transform -translate-y-1/2 text-gray-400">
                         <i className="material-symbols-outlined">search</i>
                     </span>
                     <input
                         type="text"
-                        className="w-full h-8 rounded-xl bg-gray-700 outline-none px-10"  // Se ajusta el padding a la izquierda
+                        className="w-full h-8 rounded-xl bg-gray-700 outline-none px-10"
                         placeholder="Buscar"
                         value={searchQuery}
                         onChange={handleSearchChange}
@@ -52,12 +52,12 @@ const SearchBar = () => {
                 <div className="w-full">
                     {openSearchBar ? (
                         filteredUsers && filteredUsers.length > 0 ? (
-                            <div className="flex justify-center w-full">
+                            <div className="flex justify-center">
                                 <Modal open={openModal} setOpen={setOpenModal}>
-                                    <div className="flex flex-col-reverse w-full">
+                                    <div className="flex flex-col">
                                         {filteredUsers.map((user) => (
-                                            <div key={user.id} className="w-full">
-                                                <a className='w-full' href="/">
+                                            <div key={user.id}>
+                                                <a href="/">
                                                     <UserSearchComponent
                                                         username={user.username}
                                                         editableName={user.editableName}

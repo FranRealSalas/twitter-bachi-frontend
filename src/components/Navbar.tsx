@@ -22,7 +22,7 @@ function Navbar({ openPostModal, setOpenPostModal }: postButtonNavbarProps) {
     return (
         <>
             <div className="h-screen flex flex-col justify-between pt-1 pb-6 fixed">
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-6">
                     <ButtonNavbar
                         nameRedirect="/"
                         pathContent="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
@@ -63,11 +63,11 @@ function Navbar({ openPostModal, setOpenPostModal }: postButtonNavbarProps) {
                         onClick={()=>(setOpenPostModal(!openPostModal))}
                     >Postear</button>
                 </div>
-                <div className="flex flex-col items-start justify-end text-white">
+                <div className="flex flex-col h-44 justify-end text-white">
                     <Modal open={userLogoutModalOpen} setOpen={setUserLogoutModalOpen}>
                         <button onClick={logout} className="w-full">Cerrar Sesion</button>
                     </Modal>
-                    <div onClick={() => setUserLogoutModalOpen(true)} className="flex w-52 h-12 p-3 justify-center items-center rounded-3xl hover:bg-gray-300 gap-6">
+                    <div onClick={() => setUserLogoutModalOpen(true)} className="flex w-52 h-12 p-3 justify-center items-center rounded-3xl hover:bg-gray-300 gap-9 ">
                         <img src={`http://localhost:8080/api/users/uploads/img/${loggedUser?.username}`} onError={(e)=> e.currentTarget.src="https://assets-staging.autoplants.cloud/default.jpg" } className="h-10 w-10 rounded-full" />
                         <h2 className="">{loggedUser?.username}</h2>
                         <div className="flex justify-center">

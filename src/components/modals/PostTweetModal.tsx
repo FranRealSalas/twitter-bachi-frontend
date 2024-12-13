@@ -1,7 +1,7 @@
 import { useOutsideAlerter } from "@/utils/outsideAlerter";
 import { Dispatch, ReactNode, SetStateAction, useRef } from "react";
 
-function EditModal({ children, open, setModalOpen }: { children: ReactNode, open: boolean, setModalOpen: Dispatch<SetStateAction<boolean>> }) {
+function PostModal({ children, open, setModalOpen }: { children: ReactNode, open: boolean, setModalOpen: Dispatch<SetStateAction<boolean>> }) {
     const modalRef = useRef(null);
     useOutsideAlerter(modalRef, setModalOpen);
 
@@ -19,4 +19,4 @@ function EditModal({ children, open, setModalOpen }: { children: ReactNode, open
     )
 }
 
-export default EditModal;
+export default PostModal;

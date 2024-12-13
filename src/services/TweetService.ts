@@ -23,7 +23,7 @@ const TweetService = {
     },
     async deleteTweets(id: number): Promise<Tweet> {
         return new Promise((resolve, reject) => {
-            axiosInstance.delete(`http://localhost:8080/api/tweets/${ id }`)
+            axiosInstance.delete(`http://localhost:8080/api/tweets/${id}`)
                 .then((response) => { resolve(response.data as Tweet) })
                 .catch((error: AxiosError) => { reject(error) })
         })
