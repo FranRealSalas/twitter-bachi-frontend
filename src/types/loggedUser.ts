@@ -4,5 +4,5 @@ export type LoggedUser = {
     username: string;
     admin: boolean;
     roles: Role[];
-    profileImage:String;
+    profilePhoto:String;
 }

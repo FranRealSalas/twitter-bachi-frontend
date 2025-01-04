@@ -52,12 +52,12 @@ const SearchBar = () => {
                 <div className="w-full">
                     {openSearchBar ? (
                         filteredUsers && filteredUsers.length > 0 ? (
-                            <div className="flex justify-center">
+                            <div className="flex justify-center w-full">
                                 <Modal open={openModal} setOpen={setOpenModal}>
-                                    <div className="flex flex-col">
-                                        {filteredUsers.map((user) => (
+                                    <div className="flex flex-col w-full">
+                                        {filteredUsers.sort(() => Math.random() - 0.5).slice(0, 5).map((user) => (
                                             <div key={user.id}>
-                                                <a href="/">
+                                                <a href={`/users/${user.username}`}>
                                                     <UserSearchComponent
                                                         username={user.username}
                                                         editableName={user.editableName}
@@ -69,8 +69,15 @@ const SearchBar = () => {
                                 </Modal>
                             </div>
                         ) : (
-                            <div>No hay usuarios para mostrar.</div>
+                            <div className="flex justify-center w-full">
+                                <Modal open={openModal} setOpen={setOpenModal}>
+                                    <div className="flex flex-col w-full">
+                                        <div>No hay usuarios para mostrar.</div>
+                                    </div>
+                                </Modal>
+                            </div>
                         )
+
                     ) : (
                         <></>
                     )}

@@ -38,7 +38,7 @@ const useAuth = () => {
       const data = localStorage.getItem("authToken");
       if (data !== null) {
         const userData: any = JSON.parse(Buffer.from(data.split('.')[1], 'base64').toString());
-        return { username: userData.username, admin: userData.isAdmin, roles: [], profileImage: userData.profileImage };
+        return { username: userData.username, admin: userData.isAdmin, roles: [], profilePhoto: userData.profilePhoto };
       }
     }
     return undefined;

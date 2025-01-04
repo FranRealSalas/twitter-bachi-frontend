@@ -12,7 +12,7 @@ function ButtonNavbar({ name, nameRedirect, pathContent }: ButtonNavbarProps) {
                     <path d={pathContent}></path>
                 </g>
             </svg>
-            <h2 className="text-white">{name}</h2>
+            <h2 className="text-white hidden xl:block">{name}</h2>
         </a>
     )
 }

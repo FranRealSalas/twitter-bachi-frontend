@@ -7,6 +7,16 @@ export type User = {
     password: string;
     email: string
     admin: boolean;
-    roles: Role;
-    profileImage:String;
+    roles: Role[];
+    profilePhoto:String;
+}
+
+export type UserResponseDTO = {
+    id: number;
+    editableName: string;
+    username: string;
+    email: string
+    admin: boolean;
+    roles: Role[];
+    profilePhoto:String;
 }
