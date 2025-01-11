@@ -64,6 +64,31 @@ const TweetService = {
             .then((response)=>{resolve(response.data as String)})
             .catch(error => {reject(error)})
         })
+    },
+    async giveSave(id: number): Promise<String>{
+        return new Promise((resolve, reject)=>{
+            axiosInstance.post(`http://localhost:8080/api/saves/give?tweetId=${id}`)
+            .then((response)=>{resolve(response.data as String)})
+            .catch(error => {reject(error)})
+        })
+    },
+    async removeSave(id: number): Promise<String>{
+        return new Promise((resolve, reject)=>{
+            axiosInstance.delete(`http://localhost:8080/api/saves/remove?tweetId=${id}`)
+            .then((response)=>{resolve(response.data as String)})
+            .catch(error => {reject(error)})
+        })
+    },
+    async getSavedTweets(username: String): Promise<TweetResponseDTO[]> {
+        return new Promise((resolve, reject) => {
+            axiosInstance.get(`http://localhost:8080/api/saves/${username}`)
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        }); 
     }
 }
 

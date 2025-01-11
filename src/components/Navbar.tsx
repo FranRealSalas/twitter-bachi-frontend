@@ -67,6 +67,7 @@ function Navbar() {
                     />
                     <ButtonNavbar
                         name="Guardados"
+                        nameRedirect={`/saves/${loggedUser?.username}`}
                         pathContent="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"
                     />
                     <ButtonNavbar
@@ -88,7 +89,7 @@ function Navbar() {
                 <PostModal open={openPostButtonNavbar} setModalOpen={setOpenPostButtonNavbar}>
                     <form className="flex w-full h-40 border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
                         <div className="flex w-full flex-row justify-between items-center gap-2">
-                            <img src={`http://localhost:8080/api/users/uploads/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
+                            <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
                             <input type="text"
                                 className="h-full w-full p-2 bg-black outline-none"
                                 placeholder="Que esta pasando?!"
@@ -106,7 +107,7 @@ function Navbar() {
                         <button onClick={logout} className="w-full">Cerrar Sesion</button>
                     </Modal>
                     <div onClick={() => setUserLogoutModalOpen(true)} className="flex w-fit h-12 p-3 justify-center items-center rounded-3xl hover:bg-gray-300 gap-9 cursor-pointer">
-                        <img src={`http://localhost:8080/api/users/uploads/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
+                        <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
                         <h2 className="hidden xl:block">{loggedUser?.username}</h2>
                         <div className="hidden xl:block">
                             <div className="flex justify-center">

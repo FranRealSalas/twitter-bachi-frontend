@@ -1,9 +1,10 @@
-import { User } from "./user";
+import { User, UserResponseDTO } from "./user";
 
 export type TweetResponseDTO = {
     id: number;
     content: string;
-    user: User;
+    user: UserResponseDTO;
     parentTweetId: number;
     liked: boolean;
+    saved: boolean;
 }

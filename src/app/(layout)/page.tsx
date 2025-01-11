@@ -68,10 +68,10 @@ export default function Home() {
         </div>
       </div>
       <div>
-        <form className="flex w-full h-32 border border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
+        <form className="flex w-full h-32 border border-gray-400 p-5 min-w-fit" onSubmit={handleSubmit(handleCreateTweet)}>
           <div className="flex flex-col w-full gap-3">
             <div className="flex w-full flex-row justify-between items-center gap-2">
-              <img src={`http://localhost:8080/api/users/uploads/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-14 h-14 rounded-full" />
+              <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-14 h-14 rounded-full" />
               <input type="text"
                 className="h-full w-full p-2 bg-black outline-none"
                 placeholder="Que esta pasando?!"
@@ -97,7 +97,7 @@ export default function Home() {
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-white hover:bg-gray-400 rounded"><g><path d="M6 3V2h2v1h6V2h2v1h1.5C18.88 3 20 4.119 20 5.5v2h-2v-2c0-.276-.22-.5-.5-.5H16v1h-2V5H8v1H6V5H4.5c-.28 0-.5.224-.5.5v12c0 .276.22.5.5.5h3v2h-3C3.12 20 2 18.881 2 17.5v-12C2 4.119 3.12 3 4.5 3H6zm9.5 8c-2.49 0-4.5 2.015-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.015 4.5-4.5-2.01-4.5-4.5-4.5zM9 15.5C9 11.91 11.91 9 15.5 9s6.5 2.91 6.5 6.5-2.91 6.5-6.5 6.5S9 19.09 9 15.5zm5.5-2.5h2v2.086l1.71 1.707-1.42 1.414-2.29-2.293V13z"></path></g></svg>
                 </button>
                 <button>
-                  <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-white hover:bg-gray-400 rounded"><g><path d="M12 7c-1.93 0-3.5 1.57-3.5 3.5S10.07 14 12 14s3.5-1.57 3.5-3.5S13.93 7 12 7zm0 5c-.827 0-1.5-.673-1.5-1.5S11.173 9 12 9s1.5.673 1.5 1.5S12.827 12 12 12zm0-10c-4.687 0-8.5 3.813-8.5 8.5 0 5.967 7.621 11.116 7.945 11.332l.555.37.555-.37c.324-.216 7.945-5.365 7.945-11.332C20.5 5.813 16.687 2 12 2zm0 17.77c-1.665-1.241-6.5-5.196-6.5-9.27C5.5 6.916 8.416 4 12 4s6.5 2.916 6.5 6.5c0 4.073-4.835 8.028-6.5 9.27z"></path></g></svg>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-white hover:bg-gray-400 rounded "><g><path d="M12 7c-1.93 0-3.5 1.57-3.5 3.5S10.07 14 12 14s3.5-1.57 3.5-3.5S13.93 7 12 7zm0 5c-.827 0-1.5-.673-1.5-1.5S11.173 9 12 9s1.5.673 1.5 1.5S12.827 12 12 12zm0-10c-4.687 0-8.5 3.813-8.5 8.5 0 5.967 7.621 11.116 7.945 11.332l.555.37.555-.37c.324-.216 7.945-5.365 7.945-11.332C20.5 5.813 16.687 2 12 2zm0 17.77c-1.665-1.241-6.5-5.196-6.5-9.27C5.5 6.916 8.416 4 12 4s6.5 2.916 6.5 6.5c0 4.073-4.835 8.028-6.5 9.27z"></path></g></svg>
                 </button>
               </div>
               <div>
@@ -111,7 +111,7 @@ export default function Home() {
         {tweets ? (
           <div className="flex flex-col-reverse">
             {tweets.map(Tweet => (
-              <div key={Tweet.id} className="w-full border border-grey-400">
+              <div key={Tweet.id} className="w-full min-w-fit border border-grey-400">
                 <TweetComponent Tweet={Tweet} setTweets={setTweets}></TweetComponent>
               </div>
             )

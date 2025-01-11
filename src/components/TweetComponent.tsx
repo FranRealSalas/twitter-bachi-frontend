@@ -14,6 +14,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     const [inputPostContent, setInputPostContent] = useState("");
     const [openPostButtonNavbar, setOpenPostButtonNavbar] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     async function handleEditTweet(e: any) {
         try {
@@ -37,6 +38,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
 
     useEffect(()=>{
         setIsLiked(Tweet.liked);
+        setIsSaved(Tweet.saved);
     },[Tweet])
 
     function handleCreateTweet(e: TweetResponseDTO) {
@@ -61,7 +63,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                 <>
                     <div className="flex flex-row justify-between min-w-fit">
                         <div className="flex flex-row gap-2">
-                            <img className="w-8 h-8 rounded-full" src={`http://localhost:8080/api/users/uploads/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} />
+                            <img className="w-8 h-8 rounded-full" src={`http://localhost:8080/api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} />
                             <h2>{Tweet.user.editableName}</h2>
                             <h2>@{Tweet.user.username}</h2>
                         </div>
@@ -134,7 +136,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                     <PostModal open={openPostButtonNavbar} setModalOpen={setOpenPostButtonNavbar}>
                         <form className="flex w-full h-40 border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
                             <div className="flex w-full flex-row justify-between items-center gap-2">
-                                <img src={`http://localhost:8080/api/users/uploads/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
+                                <img src={`http://localhost:8080/api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
                                 <input type="text"
                                     className="h-full w-full p-2 bg-black outline-none"
                                     placeholder="Que esta pasando?!"
@@ -149,7 +151,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                         </form>
                     </PostModal>
 
-                    <div className="flex flex-row justify-center gap-24">
+                    <div className="flex flex-row justify-center sm:gap-14 gap-12">
                         <button onClick={(e) => {
                             setOpenPostButtonNavbar(!openPostButtonNavbar)
                         }}
@@ -193,7 +195,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                                     .catch(() => console.error("Error"))
                             }
                         }}
-                            className="flex hover:bg-red-700 rounded-full w-fit h-fit p-1">
+                            className="flex hover:bg-red-500 rounded-full w-fit h-fit p-1">
                             <div>
                                 <svg viewBox="0 0 24 24" aria-hidden="true" className={`w-5 h-5 ${isLiked? "fill-red-600": "fill-white"}`} >
                                     <g>
@@ -203,12 +205,26 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                             </div>
                         </button>
                         <button onClick={(e) => {
-                            e.preventDefault()
-                            console.log("Save")
+                            if (isSaved) {
+                                TweetService.removeSave(Tweet.id)
+                                    .then(() => {
+                                        setIsSaved(!isSaved);
+                                        console.log("Save removed");
+                                    })
+                                    .catch(() => console.error("Error"))
+                            }
+                            else {
+                                TweetService.giveSave(Tweet.id)
+                                    .then(() => {
+                                        setIsSaved(!isSaved);
+                                        console.log("Save successfully");
+                                    })
+                                    .catch(() => console.error("Error"))
+                            }
                         }}
                             className="flex hover:bg-sky-500 rounded-full w-fit h-fit p-1">
                             <div>
-                                <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-white">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" className={`w-5 h-5 ${isSaved? "fill-sky-600": "fill-white"}`}>
                                     <g>
                                         <path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path>
                                     </g>

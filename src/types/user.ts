@@ -9,6 +9,7 @@ export type User = {
     admin: boolean;
     roles: Role[];
     profilePhoto:String;
+    coverPhoto:String;
 }
 
 export type UserResponseDTO = {
@@ -18,5 +19,5 @@ export type UserResponseDTO = {
     email: string
     admin: boolean;
     roles: Role[];
-    profilePhoto:String;
+    follow: boolean;
 }
