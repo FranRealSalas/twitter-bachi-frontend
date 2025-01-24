@@ -9,7 +9,7 @@ export function CreateUserModal({ createUserOpen, setCreateUserOpen }: { createU
     const { register, formState: { errors }, handleSubmit, reset } = useForm<User>();
 
     async function handleCreateSubmit(e: any,) {
-        UserService.createUser(e.editableName, e.username, e.password, e.email)
+        UserService.createUser( e.username, e.password, e.email)
             .then(() => {
                 setCreateUserOpen(false);
                 reset();

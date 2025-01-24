@@ -1,5 +1,5 @@
 "use client"
-import { LoggedUser } from '@/types/loggedUser';
+import { LoggedUser } from '@/types/user';
 import { LoginResponse } from '@/types/loginResponse';
 import axios from 'axios';
 
@@ -38,7 +38,7 @@ const useAuth = () => {
       const data = localStorage.getItem("authToken");
       if (data !== null) {
         const userData: any = JSON.parse(Buffer.from(data.split('.')[1], 'base64').toString());
-        return { username: userData.username, admin: userData.isAdmin, roles: [], profilePhoto: userData.profilePhoto };
+        return { username: userData.username, admin: userData.isAdmin, roles: [], editableName: userData.editableName , profilePhoto: userData.profilePhoto };
       }
     }
     return undefined;

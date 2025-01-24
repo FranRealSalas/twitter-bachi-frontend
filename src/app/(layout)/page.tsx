@@ -2,29 +2,29 @@
 import TweetComponent from "@/components/TweetComponent";
 import useAuth from "@/hooks/useAuth";
 import TweetService from "@/services/TweetService";
-import { LoggedUser } from "@/types/loggedUser";
-import { TweetResponseDTO } from "@/types/tweet";
-import { useRouter } from "next/navigation";
+import { LoggedUser } from "@/types/user";
+import { TweetCreation, TweetResponseDTO } from "@/types/tweet";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { redirect } from 'next/navigation';
+import Modal from "@/components/modals/Modal";
 
 export default function Home() {
-  const { register, handleSubmit, reset } = useForm<TweetResponseDTO>();
+  const { register, handleSubmit, reset } = useForm<TweetCreation>();
   const [tweets, setTweets] = useState<TweetResponseDTO[]>()
   const { getUser, isLogged } = useAuth();
-  const router = useRouter();
   const [loggedUser, setLoggedUser] = useState<LoggedUser | null>();
   const [inputPostContent, setInputPostContent] = useState("");
+  const [modalTweetImageOpen, setModalTweetImageOpen] = useState(false);
+
+  if (!isLogged()) {
+    redirect("http://localhost:3000/login");
+  }
 
   useEffect(() => {
     const user = getUser();
     setLoggedUser(user);
   }, []);
-
-  if (!isLogged()) {
-    router.push('/login')
-    return (<></>)
-  }
 
   useEffect(() => {
     TweetService.getTweets().then((response) => {
@@ -32,9 +32,9 @@ export default function Home() {
     })
   }, []);
 
-  function handleCreateTweet(e: TweetResponseDTO) {
+  function handleCreateTweet(e:TweetCreation ) {
     if (e.content.length !== 0) {
-      TweetService.createTweets(e.content).then(() => {
+      TweetService.createTweets(e.content, e.images).then(() => {
         TweetService.getTweets().then((response) => {
           setTweets(response);
           reset();
@@ -59,12 +59,12 @@ export default function Home() {
               TweetService.getTweets().then((response) => {
                 setTweets(response);
               })}
-            className="flex h-12 w-1/2 justify-center items-center hover:bg-gray-400 border border-gray-400">Para ti</button>
+            className="flex h-14 w-1/2 justify-center items-center hover:bg-gray-400 border border-gray-400">Para ti</button>
           <button
             onClick={() =>
               console.log("Siguiendo")
             }
-            className="flex w-1/2 h-12 justify-center items-center hover:bg-gray-400 border border-gray-400">Siguiendo</button>
+            className="flex w-1/2 h-14 justify-center items-center hover:bg-gray-400 border border-gray-400">Siguiendo</button>
         </div>
       </div>
       <div>
@@ -81,7 +81,12 @@ export default function Home() {
             </div>
             <div className="flex justify-between h-full">
               <div className="flex gap-5">
-                <button>
+
+                <Modal open={modalTweetImageOpen} setOpen={setModalTweetImageOpen}>
+                    <input type="file" multiple {...register("images")}/>
+                </Modal>
+                
+                <button type="button" onClick={() => setModalTweetImageOpen(!modalTweetImageOpen)}>
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-white hover:bg-gray-400 rounded"><g><path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"></path></g></svg>
                 </button>
                 <button>

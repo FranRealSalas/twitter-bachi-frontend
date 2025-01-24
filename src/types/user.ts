@@ -8,8 +8,6 @@ export type User = {
     email: string
     admin: boolean;
     roles: Role[];
-    profilePhoto:String;
-    coverPhoto:String;
 }
 
 export type UserResponseDTO = {
@@ -20,4 +18,16 @@ export type UserResponseDTO = {
     admin: boolean;
     roles: Role[];
     follow: boolean;
+    profilePhoto: String;
+    coverPhoto: String;
+    followedCount: number;
+    followerCount: number;
+}
+
+export type LoggedUser = {
+    username: string;
+    editableName: string;
+    admin: boolean;
+    roles: Role[];
+    profilePhoto: string;
 }

@@ -18,14 +18,14 @@ const savesPage = () => {
   return (
     <div>
       <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
-        <div className="flex flex-row h-full p-1 gap-2">
+        <div className="flex flex-row h-14 p-1 gap-2">
           <button className="flex h-full items-center" onClick={() => history.back()}>
             <span className="material-symbols-outlined">
               arrow_back
             </span>
           </button>
-          <div className="flex flex-col">
-            <h2 className="text-2xl">Guardados</h2>
+          <div className="flex flex-col justify-center">
+            <h2 className="text-lg">Guardados</h2>
           </div>
         </div>
       </div>

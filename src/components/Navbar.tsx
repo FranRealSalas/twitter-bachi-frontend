@@ -2,11 +2,11 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import Modal from "./modals/Modal";
 import ButtonNavbar from "./ButtonNavbar";
-import { LoggedUser } from "@/types/loggedUser";
+import { LoggedUser } from "@/types/user";
 import PostModal from "./modals/PostTweetModal";
 import TweetService from "@/services/TweetService";
 import { TweetResponseDTO } from "@/types/tweet";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 function Navbar() {
     const [userLogoutModalOpen, setUserLogoutModalOpen] = useState(false);
@@ -77,6 +77,7 @@ function Navbar() {
                     />
                     <ButtonNavbar
                         name="Más opciones"
+                        nameRedirect={`/configuration/${loggedUser?.username}`}
                         pathContent="M3.75 12c0-4.56 3.69-8.25 8.25-8.25s8.25 3.69 8.25 8.25-3.69 8.25-8.25 8.25S3.75 16.56 3.75 12zM12 1.75C6.34 1.75 1.75 6.34 1.75 12S6.34 22.25 12 22.25 22.25 17.66 22.25 12 17.66 1.75 12 1.75zm-4.75 11.5c.69 0 1.25-.56 1.25-1.25s-.56-1.25-1.25-1.25S6 11.31 6 12s.56 1.25 1.25 1.25zm9.5 0c.69 0 1.25-.56 1.25-1.25s-.56-1.25-1.25-1.25-1.25.56-1.25 1.25.56 1.25 1.25 1.25zM13.25 12c0 .69-.56 1.25-1.25 1.25s-1.25-.56-1.25-1.25.56-1.25 1.25-1.25 1.25.56 1.25 1.25z"
                     />
                 </div>
@@ -106,10 +107,15 @@ function Navbar() {
                     <Modal open={userLogoutModalOpen} setOpen={setUserLogoutModalOpen}>
                         <button onClick={logout} className="w-full">Cerrar Sesion</button>
                     </Modal>
-                    <div onClick={() => setUserLogoutModalOpen(true)} className="flex w-fit h-12 p-3 justify-center items-center rounded-3xl hover:bg-gray-300 gap-9 cursor-pointer">
-                        <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
-                        <h2 className="hidden xl:block">{loggedUser?.username}</h2>
-                        <div className="hidden xl:block">
+                    <div onClick={() => setUserLogoutModalOpen(true)} className="flex h-16 p-3 justify-between items-center rounded-full hover:bg-gray-300 cursor-pointer">
+                        <div className="flex flex-row gap-2">
+                            <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
+                            <div className="hidden xl:block max-w-sm ">
+                                <h3 className="text-base">{loggedUser?.editableName}</h3>
+                                <h2 className="text-sm">@{loggedUser?.username}</h2>
+                            </div>
+                        </div>
+                        <div className="hidden 2xl:block">
                             <div className="flex justify-center">
                                 <span className="material-symbols-outlined">
                                     more_horiz
