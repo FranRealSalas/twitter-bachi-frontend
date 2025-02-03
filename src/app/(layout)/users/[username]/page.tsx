@@ -75,6 +75,16 @@ const ProfilePage = () => {
                 setTweets(response);
             })
         }
+        if (buttonName === 'Respuestas') {
+            TweetService.getCommentsByUsername(username).then((response) => {
+                setTweets(response);
+            })
+        }
+        if (buttonName === 'Multimedia') {
+            TweetService.getTweetsWithImagesByUsername(username).then((response) => {
+                setTweets(response);
+            })
+        }
     };
 
 
@@ -82,13 +92,13 @@ const ProfilePage = () => {
         <>
             <div className="flex flex-col w-full">
                 <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
-                    <div className="flex flex-row h-14 p-1 gap-2">
+                    <div className="flex flex-row h-14 p-1 gap-2 w-full">
                         <button className="flex h-full items-center" onClick={() => history.back()}>
                             <span className="material-symbols-outlined">
                                 arrow_back
                             </span>
                         </button>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col w-full items-start">
                             <h2 className="text-lg">{currentUser?.username} </h2>
                             <h3 className="text-sm text-gray-500">{tweets ? tweets.length + " posts" : "0 posts"} </h3>
                         </div>
@@ -100,13 +110,13 @@ const ProfilePage = () => {
                             <img
                                 onClick={() => { setUploadCoverImageOpen(!uploadCoverImageOpen) }}
                                 className="w-full h-48 z-0 border-b"
-                                src={`http://localhost:8080/api/users/uploads/cover/img/${currentUser?.coverPhoto}`}
+                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/cover/img/${currentUser?.coverPhoto}`}
                                 onError={(e) => e.currentTarget.src = "https://i.pinimg.com/736x/d8/61/19/d86119efae3acd37391c4c1a9f130529.jpg"}
                             />
                             <img
                                 onClick={() => { setUploadProfileImageOpen(!uploadProfileImageOpen) }}
                                 className="h-28 w-28 rounded-full border-2 border-gray-400 absolute z-100 top-28 left-5"
-                                src={`http://localhost:8080/api/users/uploads/profile/img/${currentUser?.profilePhoto}`}
+                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${currentUser?.profilePhoto}`}
                                 onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"}
                             />
                             <Modal open={uploadProfileImageOpen} setOpen={setUploadProfileImageOpen}>
@@ -146,7 +156,7 @@ const ProfilePage = () => {
                                             }
                                         }
                                         else {
-                                            redirect(`http://localhost:3000/configuration/${loggedUser?.username}`)
+                                            redirect(`${process.env.NEXT_PUBLIC_BACKEND_URL}configuration/${loggedUser?.username}`)
                                         }
                                     }}
                                 >{currentUser?.username == loggedUser?.username ? "Editar perfil" : `${isFollowed ? "Siguiendo" : "Seguir"}`}</button>

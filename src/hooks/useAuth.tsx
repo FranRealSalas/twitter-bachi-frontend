@@ -7,7 +7,7 @@ const useAuth = () => {
 
   const login = (username: string, password: string): Promise<LoginResponse> => {
     return new Promise(function (resolve, reject) {
-      axios.post('http://localhost:8080/api/auth/login', {
+      axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/auth/login`, {
         username,
         password
       })

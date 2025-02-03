@@ -1,14 +1,14 @@
 import TweetService from "@/services/TweetService";
 import Modal from "./modals/Modal";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { TweetCreation, TweetResponseDTO } from "@/types/tweet";
 import Swal from "sweetalert2";
 import PostModal from "./modals/PostTweetModal";
-import AbsoluteModal from "./modals/AbsoluteModal";
+import ModalContentImages from "./modals/ModalContentImages";
 
 function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTweets?: any }) {
-    const { register, handleSubmit, reset } = useForm<TweetResponseDTO>();
+    const { register, handleSubmit, reset } = useForm<TweetCreation>();
     const [optionsTweetOpen, setOptionsTweetOpen] = useState(false);
     const [editTweetModalOpen, setEditTweetModelOpen] = useState(false);
     const [selectedTweet, setSelectedTweet] = useState<TweetResponseDTO>();
@@ -40,12 +40,11 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     useEffect(() => {
         setIsLiked(Tweet.liked);
         setIsSaved(Tweet.saved);
-        console.log(Tweet)
     }, [Tweet])
 
-    function handleCreateTweet(e: TweetResponseDTO) {
+    function handleCreateTweet(e: TweetCreation) {
         if (e.content.length !== 0) {
-            TweetService.createTweets(e.content, new FileList(), Tweet.id).then(() => {
+            TweetService.createTweets(e.content, e.images, Tweet.id).then(() => {
                 TweetService.getTweets().then((response) => {
                     setOpenPostButtonNavbar(false);
                     setTweets && setTweets(response);
@@ -60,12 +59,12 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     }
 
     return (
-        <div className="flex flex-col py-2 px-4 gap-3 min-w-fit">
+        <div className="flex flex-col py-2 px-4 gap-3 min-w-72 max-w-xl">
             {Tweet ? (
                 <>
                     <div className="flex flex-row justify-between min-w-fit">
                         <div className="flex flex-row gap-2">
-                            <img className="w-8 h-8 rounded-full" src={`http://localhost:8080/api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} />
+                            <img className="w-8 h-8 rounded-full" src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} />
                             <h2>{Tweet.user.editableName}</h2>
                             <h2>@{Tweet.user.username}</h2>
                         </div>
@@ -135,24 +134,31 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                         </span>
                         <div className="flex flex-wrap">
                             {Tweet.images ? (
-                                Tweet.images.map(image => {
+                                Tweet.images.slice(0, 4).map((image, index) => {
                                     const [openModalImage, setOpenModalImage] = useState(false);
                                     return (
-                                        <div key={image.id} className="w-1/2 aspect-square overflow-hidden">
-                                                <AbsoluteModal open={openModalImage} setClose={setOpenModalImage}>
+                                        <div key={image.id}
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setOpenModalImage(true);
+                                            }}
+                                            className="w-1/2 aspect-square overflow-hidden">
+                                            {index === 3 ? (
+                                                <div className="h-full w-full p-1 rounded-2xl flex justify-center relative cursor-pointer">
                                                     <img
-                                                        src={`http://localhost:8080/api/tweets/uploads/tweetImages/${image.imageName}`}
+                                                        className="blur object-cover"
+                                                        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/uploads/tweetImages/${image.imageName}`}
                                                     />
-                                                </AbsoluteModal>
-                                            <img
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    console.log("anda")
-                                                    setOpenModalImage(true);
-                                                }}
-                                                className="p-1 object-cover hover:border h-full w-full rounded-2xl"
-                                                src={`http://localhost:8080/api/tweets/uploads/tweetImages/${image.imageName}`}
-                                            />
+                                                    <p className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white rounded-lg">Ver mas</p>
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    className="p-1 object-cover h-full w-full rounded-2xl cursor-pointer"
+                                                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/uploads/tweetImages/${image.imageName}`}
+                                                />
+
+                                            )}
+                                            <ModalContentImages openModalImage={openModalImage} setOpenModalImage={setOpenModalImage} images={Tweet.images} index={index}></ModalContentImages>
                                         </div>
                                     )
                                 })
@@ -167,7 +173,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                     <PostModal open={openPostButtonNavbar} setModalOpen={setOpenPostButtonNavbar}>
                         <form className="flex w-full h-40 border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
                             <div className="flex w-full flex-row justify-between items-center gap-2">
-                                <img src={`http://localhost:8080/api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
+                                <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
                                 <input type="text"
                                     className="h-full w-full p-2 bg-black outline-none"
                                     placeholder="Que esta pasando?!"

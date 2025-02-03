@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 const UserService = {
     async getAllUsers(): Promise<UserResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get("http://localhost:8080/api/users")
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users`)
                 .then(response => {
                     resolve(response.data);
                 })
@@ -16,7 +16,7 @@ const UserService = {
     },
     async getUserByUsername(username: string): Promise<UserResponseDTO> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`http://localhost:8080/api/users/${username}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/${username}`)
                 .then(response => {
                     resolve(response.data);
                 })
@@ -28,7 +28,7 @@ const UserService = {
     async createUser(username: string, password: string, email: string): Promise<User> {
         return new Promise((resolve, reject) => {
             console.log(username, password, email);
-            axiosInstance.post("http://localhost:8080/api/users", { username, password, email })
+            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users`, { username, password, email })
                 .then((response) => resolve(response.data as User))
                 .catch((error: AxiosError) => {
                     reject(error);
@@ -37,7 +37,7 @@ const UserService = {
     },
     async editUser(username:string, editableName: string): Promise<User> {
         return new Promise((resolve, reject) => {
-            axiosInstance.put(`http://localhost:8080/api/users/edit/${username}`, { editableName })
+            axiosInstance.put(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/edit/${username}`, { editableName })
                 .then((response) => resolve(response.data as User))
                 .catch((error: AxiosError) => {
                     reject(error);
@@ -49,7 +49,7 @@ const UserService = {
         formData.append("file", file);
 
         return new Promise((resolve, reject) => {
-            axiosInstance.post("http://localhost:8080/api/users/uploadProfileImage", formData)
+            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploadProfileImage`, formData)
                 .then((response) => resolve(response.data))
                 .catch((error: AxiosError) => {
                     if (error.isAxiosError) reject(error)
@@ -62,7 +62,7 @@ const UserService = {
         formData.append("file", file);
 
         return new Promise((resolve, reject) => {
-            axiosInstance.post("http://localhost:8080/api/users/uploadCoverImage", formData)
+            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploadCoverImage`, formData)
                 .then((response) => resolve(response.data))
                 .catch((error: AxiosError) => {
                     if (error.isAxiosError) reject(error)
@@ -72,14 +72,14 @@ const UserService = {
     },
     async giveFollow(username: string): Promise<String> {
         return new Promise((resolve, reject) => {
-            axiosInstance.post(`http://localhost:8080/api/follow/give?username=${username}`)
+            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/follow/give?username=${username}`)
                 .then((response) => { resolve(response.data as String) })
                 .catch(error => { reject(error) })
         })
     },
     async removeFollow(username: string): Promise<String> {
         return new Promise((resolve, reject) => {
-            axiosInstance.delete(`http://localhost:8080/api/follow/remove?username=${username}`)
+            axiosInstance.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/follow/remove?username=${username}`)
                 .then((response) => { resolve(response.data as String) })
                 .catch(error => { reject(error) })
         })

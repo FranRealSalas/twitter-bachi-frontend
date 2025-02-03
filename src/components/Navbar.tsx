@@ -90,7 +90,7 @@ function Navbar() {
                 <PostModal open={openPostButtonNavbar} setModalOpen={setOpenPostButtonNavbar}>
                     <form className="flex w-full h-40 border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
                         <div className="flex w-full flex-row justify-between items-center gap-2">
-                            <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
+                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
                             <input type="text"
                                 className="h-full w-full p-2 bg-black outline-none"
                                 placeholder="Que esta pasando?!"
@@ -109,7 +109,7 @@ function Navbar() {
                     </Modal>
                     <div onClick={() => setUserLogoutModalOpen(true)} className="flex h-16 p-3 justify-between items-center rounded-full hover:bg-gray-300 cursor-pointer">
                         <div className="flex flex-row gap-2">
-                            <img src={`http://localhost:8080/api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
+                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
                             <div className="hidden xl:block max-w-sm ">
                                 <h3 className="text-base">{loggedUser?.editableName}</h3>
                                 <h2 className="text-sm">@{loggedUser?.username}</h2>

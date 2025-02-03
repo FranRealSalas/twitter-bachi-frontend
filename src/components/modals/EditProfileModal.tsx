@@ -7,7 +7,7 @@ import UserService from "@/services/UserService";
 import { useParams } from "next/navigation";
 
 
-export function EditProfileModal({ editProfileOpen, setEditProfileOpen, user, setUser }: { editProfileOpen: boolean, setEditProfileOpen: Dispatch<SetStateAction<boolean>>, user: UserResponseDTO, setUser: Dispatch<SetStateAction<UserResponseDTO | undefined>> }) {
+export function EditProfileModal({ editProfileOpen, setEditProfileOpen, user, setUser }: { editProfileOpen: boolean, setEditProfileOpen: Dispatch<SetStateAction<boolean>>, user: UserResponseDTO | undefined, setUser: Dispatch<SetStateAction<UserResponseDTO | undefined>> }) {
     const { register, handleSubmit } = useForm<TweetResponseDTO>();
     const { username } = useParams<{ username: string }>();
 
@@ -21,12 +21,18 @@ export function EditProfileModal({ editProfileOpen, setEditProfileOpen, user, se
 
     return (
         <Modal open={editProfileOpen} setOpen={setEditProfileOpen}>
-            <form onSubmit={handleSubmit(handleEditProfile)}>
-                <input
-                    {...register("user.editableName")}
-                    defaultValue={user ? user.editableName : ""}
-                    className="text-black"></input>
-                <button type="submit">Confirmar</button>
+            <form onSubmit={handleSubmit(handleEditProfile)} className="w-full">
+                <div className="flex flex-row w-full justify-between">
+                    <input
+                        {...register("user.editableName")}
+                        defaultValue={user ? user.editableName : ""}
+                        className="text-black"></input>
+                    <button
+                        type="submit"
+                        className="bg-sky-500 p-1 rounded-full"
+                        onClick={()=>setEditProfileOpen(false)}
+                    >Confirmar</button>
+                </div>
             </form>
         </Modal>
     )
