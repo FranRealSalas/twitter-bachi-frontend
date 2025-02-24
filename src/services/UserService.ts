@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios";
-import { User, UserResponseDTO } from "@/types/user";
+import { User, UserFollow, UserResponseDTO } from "@/types/user";
 import { AxiosError } from "axios";
 
 const UserService = {
@@ -17,6 +17,17 @@ const UserService = {
     async getUserByUsername(username: string): Promise<UserResponseDTO> {
         return new Promise((resolve, reject) => {
             axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/${username}`)
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    reject(error);
+                })
+        })
+    },
+    async getLoggedUser(): Promise<UserResponseDTO> {
+        return new Promise((resolve, reject) => {
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/logged-user`)
                 .then(response => {
                     resolve(response.data);
                 })
@@ -82,6 +93,28 @@ const UserService = {
             axiosInstance.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/follow/remove?username=${username}`)
                 .then((response) => { resolve(response.data as String) })
                 .catch(error => { reject(error) })
+        })
+    },
+    async getFollowersByUsername(username: string): Promise<UserFollow[]> {
+        return new Promise((resolve, reject) => {
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/followers/${username}`)
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    reject(error);
+                })
+        })
+    },
+    async getFollowingsByUsername(username: string): Promise<UserFollow[]> {
+        return new Promise((resolve, reject) => {
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/following/${username}`)
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    reject(error);
+                })
         })
     }
 }

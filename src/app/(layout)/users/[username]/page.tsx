@@ -6,7 +6,7 @@ import useAuth from "@/hooks/useAuth";
 import TweetService from "@/services/TweetService";
 import UserService from "@/services/UserService";
 import { TweetResponseDTO } from "@/types/tweet";
-import { LoggedUser, User, UserResponseDTO } from "@/types/user";
+import { UserResponseDTO } from "@/types/user";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { set, useForm } from "react-hook-form";
@@ -19,14 +19,14 @@ const ProfilePage = () => {
     const { username } = useParams<{ username: string }>();
     const { register, handleSubmit } = useForm<UserResponseDTO>();
     const [isFollowed, setIsFollowed] = useState(false);
-    const [loggedUser, setLoggedUser] = useState<LoggedUser>();
+    const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
     const [currentUser, setCurrentUser] = useState<UserResponseDTO>();
-    const { getUser } = useAuth();
     const [selectedButton, setSelectedButton] = useState('Posts');
 
     useEffect(() => {
-        const user = getUser();
-        setLoggedUser(user);
+        UserService.getLoggedUser().then((response) => {
+            setLoggedUser(response);
+        })
     }, []);
 
     useEffect(() => {
@@ -156,7 +156,7 @@ const ProfilePage = () => {
                                             }
                                         }
                                         else {
-                                            redirect(`${process.env.NEXT_PUBLIC_BACKEND_URL}configuration/${loggedUser?.username}`)
+                                            redirect(`/configuration/${loggedUser?.username}`)
                                         }
                                     }}
                                 >{currentUser?.username == loggedUser?.username ? "Editar perfil" : `${isFollowed ? "Siguiendo" : "Seguir"}`}</button>
@@ -177,8 +177,18 @@ const ProfilePage = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-end gap-4">
-                                    <span>{currentUser?.followerCount} Siguiendo</span>
-                                    <span>{currentUser?.followedCount} Seguidores</span>
+                                    <span
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            redirect(`/followings/${loggedUser?.username}`)
+                                        }}
+                                    >{currentUser?.followerCount} Siguiendo</span>
+                                    <span
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                            redirect(`/followers/${loggedUser?.username}`)
+                                        }}
+                                    >{currentUser?.followedCount} Seguidores</span>
                                 </div>
                             </div>
                         </div>

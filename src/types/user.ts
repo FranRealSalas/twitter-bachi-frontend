@@ -31,3 +31,9 @@ export type LoggedUser = {
     roles: Role[];
     profilePhoto: string;
 }
+
+export type UserFollow = {
+    id:number;
+    followed:UserResponseDTO;
+    follower:UserResponseDTO;
+}

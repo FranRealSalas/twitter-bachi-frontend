@@ -4,6 +4,7 @@ import { UserResponseDTO } from "./user";
 export type TweetResponseDTO = {
     id: number;
     content: string;
+    date: Date;
     user: UserResponseDTO;
     parentTweetId: number;
     liked: boolean;

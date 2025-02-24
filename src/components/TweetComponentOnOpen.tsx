@@ -7,13 +7,10 @@ import Swal from "sweetalert2";
 import PostModal from "./modals/PostTweetModal";
 import ModalContentImages from "./modals/ModalContentImages";
 import { redirect } from 'next/navigation';
-import { UserResponseDTO } from "@/types/user";
-import UserService from "@/services/UserService";
 
-function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTweets?: any }) {
+function TweetComponentOnOpen({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTweets?: any }) {
     const { register, handleSubmit, reset } = useForm<TweetCreation>();
-    const [optionsTweetOpenUser, setOptionsTweetOpenUser] = useState(false);
-    const [optionsTweetOpenNotUser, setOptionsTweetOpenNotUser] = useState(false);
+    const [optionsTweetOpen, setOptionsTweetOpen] = useState(false);
     const [editTweetModalOpen, setEditTweetModelOpen] = useState(false);
     const [selectedTweet, setSelectedTweet] = useState<TweetResponseDTO>();
     const [inputPostContent, setInputPostContent] = useState("");
@@ -22,14 +19,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     const [isSaved, setIsSaved] = useState(false);
     const [likeCount, setLikeCount] = useState(Tweet.likeCount);
     const [saveCount, setSaveCount] = useState(Tweet.saveCount);
-    const [formattedHour, setFormattedHour] = useState("")
-    const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
-
-    useEffect(() => {
-        UserService.getLoggedUser().then((response) => {
-            setLoggedUser(response);
-        })
-    }, []);
+    const [formattedTimeOnTweetOpen, setFormattedTimeOnTweetOpen] = useState("")
 
     async function handleEditTweet(e: any) {
         try {
@@ -57,38 +47,17 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     }, [Tweet])
 
     useEffect(() => {
-        const tweetDate = new Date(Tweet.date);
-        const currentDate = new Date();
-
-        // Convertir las fechas a milisegundos
-        const tweetTime = tweetDate.getTime();
-        const currentTime = currentDate.getTime();
-
-        // Calcular la diferencia en milisegundos
-        const diff = currentTime - tweetTime;
-
-        // Calcular la diferencia en horas y días
-        const diffInHours = diff / (1000 * 60 * 60);
-        const diffInDays = diff / (1000 * 60 * 60 * 24);
-
-        // Si han pasado menos de 24 horas, mostrar el tiempo transcurrido
-        if (diffInDays < 1) {
-            const diffInMinutes = diff / (1000 * 60);
-            if (diffInMinutes < 60) {
-                setFormattedHour(`${Math.floor(diffInMinutes)}min`);
-            } else {
-                setFormattedHour(`${Math.floor(diffInHours)}h`);
-            }
-        } else {
-            // Si han pasado 24 horas o más, mostrar la fecha
-            const formattedDate = tweetDate.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-            });
-            setFormattedHour(formattedDate);
-        }
-    }, [Tweet.date]);
+        const date = new Date(Tweet.date)
+        const formattedTime = date.toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour12: true,
+        });
+        setFormattedTimeOnTweetOpen(formattedTime)
+    }, []);
 
     function handleCreateTweet(e: TweetCreation) {
         if (e.content.length !== 0) {
@@ -134,11 +103,10 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                                 }}
                                 className="cursor-pointer"
                             >@{Tweet.user.username}</h2>
-                            <span className="text-gray-400">{`${formattedHour}`}</span>
                         </div>
                         <div>
                             <div className="absolute">
-                                <Modal open={optionsTweetOpenUser} setOpen={setOptionsTweetOpenUser}>
+                                <Modal open={optionsTweetOpen} setOpen={setOptionsTweetOpen}>
                                     <div className="flex flex-col">
 
                                         <PostModal open={editTweetModalOpen} setModalOpen={setEditTweetModelOpen}>
@@ -177,7 +145,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                                                 if (result.isConfirmed) {
                                                     await TweetService.deleteTweets(Tweet.id)
                                                     TweetService.getTweets().then((response) => {
-                                                        setOptionsTweetOpenUser(false);
+                                                        setOptionsTweetOpen(false);
                                                         setTweets(response);
                                                     })
                                                     Swal.fire({
@@ -191,45 +159,8 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
 
                                     </div>
                                 </Modal>
-
-                                <Modal open={optionsTweetOpenNotUser} setOpen={setOptionsTweetOpenNotUser}>
-                                    <div>
-                                        <button onClick={() =>
-                                            Swal.fire({
-                                                title: "¿Estas seguro?",
-                                                icon: "warning",
-                                                showCancelButton: true,
-                                                confirmButtonColor: "#3085d6",
-                                                cancelButtonColor: "#d33",
-                                                cancelButtonText: 'Cancelar',
-                                                confirmButtonText: "Sí, denunciar!"
-                                            }).then(async (result) => {
-                                                if (result.isConfirmed) {
-                                                    setOptionsTweetOpenNotUser(false);
-                                                    Swal.fire({
-                                                        text: "Denuncia enviada.",
-                                                        icon: "success"
-                                                    });
-                                                }
-                                            })}
-                                            className="flex items-center justify-center w-full text-red-600">Denunciar</button>
-                                    </div>
-                                </Modal>
                             </div>
-                            <span className="material-symbols-outlined cursor-pointer"
-                                onClick={() => {
-                                    if (Tweet.user.username === loggedUser?.username) {
-                                        setTimeout(() => {
-                                            setOptionsTweetOpenUser(true)
-                                        }, 100)
-                                    }
-                                    else {
-                                        setTimeout(() => {
-                                            setOptionsTweetOpenNotUser(true)
-                                        }, 100)
-                                    }
-                                }}
-                            >more_horiz</span>
+                            <span className="material-symbols-outlined cursor-pointer" onClick={() => setOptionsTweetOpen(true)}>more_horiz</span>
                         </div>
                     </div>
 
@@ -292,6 +223,10 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                             </div>
                         </form>
                     </PostModal>
+
+                    <div className="flex flex-row gap-3 text-gray-400">
+                        <span>{`${formattedTimeOnTweetOpen}`}</span>
+                    </div>
 
                     <div className="flex flex-row justify-center sm:gap-14 gap-12">
                         <div className="flex flex-row items-center">
@@ -386,10 +321,9 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                 </>
             ) : (
                 <>Cargando...</>
-            )
-            }
-        </div >
+            )}
+        </div>
     )
 }
 
-export default TweetComponent;
+export default TweetComponentOnOpen;

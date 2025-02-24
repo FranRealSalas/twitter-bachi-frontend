@@ -15,6 +15,8 @@ export function EditProfileModal({ editProfileOpen, setEditProfileOpen, user, se
         UserService.editUser(username, e.user.editableName).then(() => {
             UserService.getUserByUsername(username).then((response) => {
                 setUser(response);
+                setEditProfileOpen(false);
+                location.reload();
             })
         })
     }
@@ -30,7 +32,6 @@ export function EditProfileModal({ editProfileOpen, setEditProfileOpen, user, se
                     <button
                         type="submit"
                         className="bg-sky-500 p-1 rounded-full"
-                        onClick={()=>setEditProfileOpen(false)}
                     >Confirmar</button>
                 </div>
             </form>

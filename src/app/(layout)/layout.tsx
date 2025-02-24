@@ -2,6 +2,7 @@
 import Navbar from "@/components/Navbar";
 import "../globals.css";
 import SearchBar from "@/components/SearchBar";
+import WhoToFollowComponent from "@/components/WhoToFollowComponent";
 
 export default function RootLayout({
   children,
@@ -25,6 +26,7 @@ export default function RootLayout({
               </div>
               <div className="w-1/3 hidden 2xl:block">
                 <SearchBar />
+                <WhoToFollowComponent></WhoToFollowComponent>
               </div>
             </div>
           </div>

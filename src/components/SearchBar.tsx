@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import UserSearchComponent from './UserSearchComponent';
-import { User } from '@/types/user';
+import { User, UserResponseDTO } from '@/types/user';
 import UserService from '@/services/UserService';
 import Modal from './modals/Modal';
 
 const SearchBar = () => {
-    const [users, setUsers] = useState<User[] | null>(null);
-    const [filteredUsers, setFilteredUsers] = useState<User[] | null>(null);
+    const [users, setUsers] = useState<UserResponseDTO[] | null>(null);
+    const [filteredUsers, setFilteredUsers] = useState<UserResponseDTO[] | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [openSearchBar, setOpenSearchBar] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
+
+    useEffect(() => {
+        UserService.getLoggedUser().then((response) => {
+            setLoggedUser(response);
+        })
+    }, []);
 
     useEffect(() => {
         UserService.getAllUsers().then((response) => {
@@ -45,7 +52,9 @@ const SearchBar = () => {
                         onChange={handleSearchChange}
                         onClick={() => {
                             setOpenModal(true);
-                            setOpenSearchBar(true);
+                            setTimeout(() => {
+                                setOpenSearchBar(true);
+                            }, 100);
                         }}
                     />
                 </div>
@@ -57,12 +66,14 @@ const SearchBar = () => {
                                     <div className="flex flex-col w-full">
                                         {filteredUsers.sort(() => Math.random() - 0.5).slice(0, 5).map((user) => (
                                             <div key={user.id}>
-                                                <a href={`/users/${user.username}`}>
-                                                    <UserSearchComponent
-                                                        username={user.username}
-                                                        editableName={user.editableName}
-                                                    />
-                                                </a>
+                                                {user.username != loggedUser?.username ?
+                                                    <a href={`/users/${user.username}`}>
+                                                        <UserSearchComponent
+                                                            username={user.username}
+                                                            editableName={user.editableName}
+                                                        />
+                                                    </a> :
+                                                    <></>}
                                             </div>
                                         ))}
                                     </div>

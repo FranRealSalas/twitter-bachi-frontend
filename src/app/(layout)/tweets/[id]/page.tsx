@@ -1,5 +1,6 @@
 'use client'
 import TweetComponent from "@/components/TweetComponent";
+import TweetComponentOnOpen from "@/components/TweetComponentOnOpen";
 import TweetService from "@/services/TweetService";
 import { TweetResponseDTO } from "@/types/tweet";
 import { useParams } from "next/navigation";
@@ -38,7 +39,7 @@ const TweetPage = () => {
                                 </div>
                             </div>
                             <div className="w-full">
-                                <TweetComponent Tweet={tweet}></TweetComponent>
+                                <TweetComponentOnOpen Tweet={tweet}></TweetComponentOnOpen>
                             </div>
                         </div >
                         <div className="w-full flex flex-col">

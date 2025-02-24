@@ -14,6 +14,17 @@ const TweetService = {
                 });
         });
     },
+    async getTweetsByFollowed(): Promise<TweetResponseDTO[]> {
+        return new Promise((resolve, reject) => {
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/by-followed`)
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+        });
+    },
     async createTweets(content: String, fileList: FileList, parentTweetId?: number): Promise<TweetResponseDTO> {
         const formData = new FormData();
             for (let i = 0; i < fileList?.length; i++) {

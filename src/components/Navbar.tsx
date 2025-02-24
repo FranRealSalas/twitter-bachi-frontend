@@ -2,43 +2,31 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import Modal from "./modals/Modal";
 import ButtonNavbar from "./ButtonNavbar";
-import { LoggedUser } from "@/types/user";
+import { LoggedUser, User, UserResponseDTO } from "@/types/user";
 import PostModal from "./modals/PostTweetModal";
 import TweetService from "@/services/TweetService";
 import { TweetResponseDTO } from "@/types/tweet";
 import { useForm } from "react-hook-form";
+import UserService from "@/services/UserService";
+import PostForm from "./PostForm";
 
-function Navbar() {
+interface NavbarProps {
+    setTweetsForPage?: Dispatch<SetStateAction<TweetResponseDTO[] | undefined>>;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ setTweetsForPage }) => {
     const [userLogoutModalOpen, setUserLogoutModalOpen] = useState(false);
-    const { logout, getUser } = useAuth();
+    const { logout } = useAuth();
     const { register, handleSubmit, reset } = useForm<TweetResponseDTO>();
-    const [loggedUser, setLoggedUser] = useState<LoggedUser | null>();
+    const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
     const [openPostButtonNavbar, setOpenPostButtonNavbar] = useState(false);
-    const [inputPostContent, setInputPostContent] = useState("");
 
     useEffect(() => {
-        const user = getUser();
-        setLoggedUser(user);
+        UserService.getLoggedUser().then((response) => {
+            setLoggedUser(response);
+        })
     }, []);
 
-    function handleCreateTweet(e: TweetResponseDTO) {
-        if (e.content.length !== 0) {
-            TweetService.createTweets(e.content).then(() => {
-                TweetService.getTweets().then((response) => {
-                    setOpenPostButtonNavbar(false);
-                    reset();
-                    location.reload();
-                })
-            })
-        }
-        else {
-            alert("Vacio");
-        }
-    }
-
-    function handleUpdatePostContent(e: any) {
-        setInputPostContent(e.target.value);
-    }
 
     return (
         <>
@@ -55,10 +43,12 @@ function Navbar() {
                     />
                     <ButtonNavbar
                         name="Explorar"
+                        nameRedirect={`/explore/${loggedUser?.username}`}
                         pathContent="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"
                     />
                     <ButtonNavbar
                         name="Notificaciones"
+                        nameRedirect={`/notifications/${loggedUser?.username}`}
                         pathContent="M19.993 9.042C19.48 5.017 16.054 2 11.996 2s-7.49 3.021-7.999 7.051L2.866 18H7.1c.463 2.282 2.481 4 4.9 4s4.437-1.718 4.9-4h4.236l-1.143-8.958zM12 20c-1.306 0-2.417-.835-2.829-2h5.658c-.412 1.165-1.523 2-2.829 2zm-6.866-4l.847-6.698C6.364 6.272 8.941 4 11.996 4s5.627 2.268 6.013 5.295L18.864 16H5.134z"
                     />
                     <ButtonNavbar
@@ -88,26 +78,20 @@ function Navbar() {
                 </div>
 
                 <PostModal open={openPostButtonNavbar} setModalOpen={setOpenPostButtonNavbar}>
-                    <form className="flex w-full h-40 border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
-                        <div className="flex w-full flex-row justify-between items-center gap-2">
-                            <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
-                            <input type="text"
-                                className="h-full w-full p-2 bg-black outline-none"
-                                placeholder="Que esta pasando?!"
-                                {...register("content")}
-                                onChange={handleUpdatePostContent} />
-                            <div className="flex items-end h-full">
-                                <button type="submit" className={`rounded-xl w-[75px] h-[30px] ${inputPostContent.length === 0 ? 'bg-gray-500' : 'bg-sky-500'}`} disabled={inputPostContent.length === 0}>Postear</button>
-                            </div>
-                        </div>
-                    </form>
+                    <PostForm setTweets={setTweetsForPage}></PostForm>
                 </PostModal>
 
                 <div className="flex flex-col h-44 justify-end text-white">
                     <Modal open={userLogoutModalOpen} setOpen={setUserLogoutModalOpen}>
                         <button onClick={logout} className="w-full">Cerrar Sesion</button>
                     </Modal>
-                    <div onClick={() => setUserLogoutModalOpen(true)} className="flex h-16 p-3 justify-between items-center rounded-full hover:bg-gray-300 cursor-pointer">
+                    <div
+                        onClick={() =>
+                            setTimeout(() => {
+                                setUserLogoutModalOpen(true)
+                            }, 100)
+                        }
+                        className="flex h-16 p-3 justify-between items-center rounded-full hover:bg-gray-300 cursor-pointer">
                         <div className="flex flex-row gap-2">
                             <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="h-10 w-10 rounded-full" />
                             <div className="hidden xl:block max-w-sm ">
