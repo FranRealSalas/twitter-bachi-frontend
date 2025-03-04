@@ -34,7 +34,11 @@ const configurationPage = () => {
       <div className="flex flex-col">
         <button
           className="border w-full h-16 flex items-center px-2"
-          onClick={() => setEditProfileOpen(!editProfileOpen)}
+          onClick={() => {
+            setTimeout(() => {
+              setEditProfileOpen(!editProfileOpen)
+          }, 100)
+          }} 
           >Editar nombre</button>
           <EditProfileModal editProfileOpen={editProfileOpen} setEditProfileOpen={setEditProfileOpen} user={currentUser} setUser={setCurrentUser}></EditProfileModal>
       </div>

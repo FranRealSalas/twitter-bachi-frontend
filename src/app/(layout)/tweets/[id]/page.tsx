@@ -45,7 +45,7 @@ const TweetPage = () => {
                         <div className="w-full flex flex-col">
                             <div>
                                 {comments ? (
-                                    <div className="flex flex-col-reverse">
+                                    <div className="flex flex-col">
 
                                         {comments.length > 0 ?
                                             comments.map(comment => (

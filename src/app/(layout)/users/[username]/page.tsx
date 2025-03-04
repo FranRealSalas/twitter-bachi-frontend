@@ -2,7 +2,6 @@
 
 import Modal from "@/components/modals/Modal";
 import TweetComponent from "@/components/TweetComponent";
-import useAuth from "@/hooks/useAuth";
 import TweetService from "@/services/TweetService";
 import UserService from "@/services/UserService";
 import { TweetResponseDTO } from "@/types/tweet";
@@ -108,13 +107,21 @@ const ProfilePage = () => {
                     <div className="flex flex-col border border-gray-400">
                         <div className="relative">
                             <img
-                                onClick={() => { setUploadCoverImageOpen(!uploadCoverImageOpen) }}
+                                onClick={() => {
+                                    setTimeout(() => {
+                                        setUploadCoverImageOpen(!uploadCoverImageOpen)
+                                    }, 100)
+                                }}
                                 className="w-full h-48 z-0 border-b"
                                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/cover/img/${currentUser?.coverPhoto}`}
                                 onError={(e) => e.currentTarget.src = "https://i.pinimg.com/736x/d8/61/19/d86119efae3acd37391c4c1a9f130529.jpg"}
                             />
                             <img
-                                onClick={() => { setUploadProfileImageOpen(!uploadProfileImageOpen) }}
+                                onClick={() => {
+                                    setTimeout(() => {
+                                        setUploadProfileImageOpen(!uploadProfileImageOpen)
+                                    }, 100)
+                                }}
                                 className="h-28 w-28 rounded-full border-2 border-gray-400 absolute z-100 top-28 left-5"
                                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${currentUser?.profilePhoto}`}
                                 onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"}
@@ -223,7 +230,7 @@ const ProfilePage = () => {
                 <div className="h-full">
                     <div>
                         {tweets ? (
-                            <div className="flex flex-col-reverse">
+                            <div className="flex flex-col">
                                 {tweets.map(Tweet => (
                                     <div key={Tweet.id} className="w-full border border-gray-400">
                                         <TweetComponent Tweet={Tweet} setTweets={setTweets}></TweetComponent>

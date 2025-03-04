@@ -31,7 +31,7 @@ const savesPage = () => {
       </div>
       <div>
         {savedTweets ? (
-          <div className="flex flex-col-reverse">
+          <div className="flex flex-col">
             {savedTweets.map(savedTweet => (
               <div key={savedTweet.id} className="w-full border border-grey-400">
                 <TweetComponent Tweet={savedTweet} setTweets={setSavedTweets}></TweetComponent>

@@ -32,7 +32,7 @@ const NotificationsPage = () => {
             </div>
             <div>
                 {userNotifications ? (
-                    <div className="flex flex-col-reverse">
+                    <div className="flex flex-col">
                         {userNotifications.map(userNotifications => (
                             <div key={userNotifications.id} className="w-full min-w-fit border border-grey-400">
                                 <div className="flex flex-row p-3">

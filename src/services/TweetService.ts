@@ -3,9 +3,9 @@ import { TweetResponseDTO } from "@/types/tweet";
 import { AxiosError } from "axios";
 
 const TweetService = {
-    async getTweets(): Promise<TweetResponseDTO[]> {
+    async getTweets(id: number|null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets${id?`?id=${id}`:''}`)
                 .then(response => {
                     resolve(response.data);
                 })

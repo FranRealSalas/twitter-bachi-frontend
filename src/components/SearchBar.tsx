@@ -51,7 +51,9 @@ const SearchBar = () => {
                         value={searchQuery}
                         onChange={handleSearchChange}
                         onClick={() => {
-                            setOpenModal(true);
+                            setTimeout(() => {
+                                setOpenModal(true);
+                            }, 100)
                             setTimeout(() => {
                                 setOpenSearchBar(true);
                             }, 100);

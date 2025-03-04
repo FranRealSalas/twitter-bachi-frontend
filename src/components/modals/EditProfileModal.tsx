@@ -15,7 +15,9 @@ export function EditProfileModal({ editProfileOpen, setEditProfileOpen, user, se
         UserService.editUser(username, e.user.editableName).then(() => {
             UserService.getUserByUsername(username).then((response) => {
                 setUser(response);
-                setEditProfileOpen(false);
+                setTimeout(() => {
+                    setEditProfileOpen(false);
+                }, 100)
                 location.reload();
             })
         })

@@ -7,8 +7,8 @@ import Swal from "sweetalert2";
 import PostModal from "./modals/PostTweetModal";
 import ModalContentImages from "./modals/ModalContentImages";
 import { redirect } from 'next/navigation';
-import { UserResponseDTO } from "@/types/user";
-import UserService from "@/services/UserService";
+import { LoggedUser, UserResponseDTO } from "@/types/user";
+import useAuth from "@/hooks/useAuth";
 
 function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTweets?: any }) {
     const { register, handleSubmit, reset } = useForm<TweetCreation>();
@@ -23,12 +23,12 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     const [likeCount, setLikeCount] = useState(Tweet.likeCount);
     const [saveCount, setSaveCount] = useState(Tweet.saveCount);
     const [formattedHour, setFormattedHour] = useState("")
-    const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
+    const { getUser } = useAuth();
+    const [loggedUser, setLoggedUser] = useState<LoggedUser>()
 
     useEffect(() => {
-        UserService.getLoggedUser().then((response) => {
-            setLoggedUser(response);
-        })
+        const user = getUser();
+        setLoggedUser(user);
     }, []);
 
     async function handleEditTweet(e: any) {
@@ -36,8 +36,12 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
             TweetService.editTweets(Tweet.id, e.content).then(() => {
                 TweetService.getTweets().then((response) => {
                     setTweets && setTweets(response);
-                    setEditTweetModelOpen(false);
-                    setOptionsTweetOpen(false);
+                    setTimeout(() => {
+                        setEditTweetModelOpen(false);
+                    }, 100)
+                    setTimeout(() => {
+                        setOptionsTweetOpenUser(false);
+                    }, 100)
                     reset();
                 })
             })
@@ -94,7 +98,9 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
         if (e.content.length !== 0) {
             TweetService.createTweets(e.content, e.images, Tweet.id).then(() => {
                 TweetService.getTweets().then((response) => {
-                    setOpenPostButtonNavbar(false);
+                    setTimeout(() => {
+                        setOpenPostButtonNavbar(false);
+                    }, 100)
                     setTweets && setTweets(response);
                     reset();
                     location.reload();
@@ -160,7 +166,9 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
 
                                         <button onClick={async () => {
                                             setSelectedTweet(Tweet);
-                                            setEditTweetModelOpen(true);
+                                            setTimeout(() => {
+                                                setEditTweetModelOpen(true);
+                                            }, 100)
                                         }} className="flex justify-start w-full">Editar</button>
 
                                         <button onClick={() =>
@@ -177,7 +185,9 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                                                 if (result.isConfirmed) {
                                                     await TweetService.deleteTweets(Tweet.id)
                                                     TweetService.getTweets().then((response) => {
-                                                        setOptionsTweetOpenUser(false);
+                                                        setTimeout(() => {
+                                                            setOptionsTweetOpenUser(false);
+                                                        }, 100)
                                                         setTweets(response);
                                                     })
                                                     Swal.fire({
@@ -245,7 +255,9 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                                         <div key={image.id}
                                             onClick={(e) => {
                                                 e.preventDefault()
-                                                setOpenModalImage(true);
+                                                setTimeout(() => {
+                                                    setOpenModalImage(true);
+                                                }, 100)
                                             }}
                                             className="w-1/2 aspect-square overflow-hidden">
                                             {index === 3 ? (
@@ -296,7 +308,9 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                     <div className="flex flex-row justify-center sm:gap-14 gap-12">
                         <div className="flex flex-row items-center">
                             <button onClick={(e) => {
-                                setOpenPostButtonNavbar(!openPostButtonNavbar)
+                                setTimeout(() => {
+                                    setOpenPostButtonNavbar(!openPostButtonNavbar)
+                                }, 100)
                             }}
                                 className="flex hover:bg-sky-500 rounded-full w-fit h-fit p-1">
                                 <div>

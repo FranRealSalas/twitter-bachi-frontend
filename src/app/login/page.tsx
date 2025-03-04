@@ -68,7 +68,11 @@ const LoginPage = () => {
                             <CreateUserModal createUserOpen={createUserOpen} setCreateUserOpen={setCreateUserOpen} />
                         </div>
                     </div>
-                    <button onClick={() => { setCreateUserOpen(!createUserOpen) }} className='bg-sky-500 rounded w-full p-2 text-white'>Crear cuenta</button>
+                    <button onClick={() => {
+                        setTimeout(() => {
+                            setCreateUserOpen(!createUserOpen)
+                        }, 100)
+                    }} className='bg-sky-500 rounded w-full p-2 text-white'>Crear cuenta</button>
                 </div>
             </div>
         </div>

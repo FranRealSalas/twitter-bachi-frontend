@@ -4,9 +4,7 @@ import Modal from "./modals/Modal";
 import ButtonNavbar from "./ButtonNavbar";
 import { LoggedUser, User, UserResponseDTO } from "@/types/user";
 import PostModal from "./modals/PostTweetModal";
-import TweetService from "@/services/TweetService";
 import { TweetResponseDTO } from "@/types/tweet";
-import { useForm } from "react-hook-form";
 import UserService from "@/services/UserService";
 import PostForm from "./PostForm";
 
@@ -17,7 +15,6 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ setTweetsForPage }) => {
     const [userLogoutModalOpen, setUserLogoutModalOpen] = useState(false);
     const { logout } = useAuth();
-    const { register, handleSubmit, reset } = useForm<TweetResponseDTO>();
     const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
     const [openPostButtonNavbar, setOpenPostButtonNavbar] = useState(false);
 
@@ -73,7 +70,11 @@ const Navbar: React.FC<NavbarProps> = ({ setTweetsForPage }) => {
                 </div>
                 <div className="flex w-full p-3 justify-start">
                     <button type="submit" className="bg-sky-500 rounded-3xl w-[150px] h-[45px] hidden xl:block"
-                        onClick={() => (setOpenPostButtonNavbar(!openPostButtonNavbar))}
+                        onClick={() => (
+                            setTimeout(() => {
+                                setOpenPostButtonNavbar(!openPostButtonNavbar)
+                            }, 100)
+                        )}
                     >Postear</button>
                 </div>
 

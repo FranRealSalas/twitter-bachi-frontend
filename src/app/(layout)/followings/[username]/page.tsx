@@ -59,7 +59,7 @@ const FollowingsPage = () => {
             </div>
             <div>
                 {followRelation ? (
-                    <div className="flex flex-col-reverse">
+                    <div className="flex flex-col">
                         {followRelation.map(FollowRelation => (
                             <div key={FollowRelation.id} className="w-full min-w-fit border border-grey-400">
                                 <UserFollowComponent username={FollowRelation.followed.username} editableName={FollowRelation.followed.editableName}></UserFollowComponent>
