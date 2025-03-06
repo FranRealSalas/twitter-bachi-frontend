@@ -20,7 +20,7 @@ const ProfilePage = () => {
     const [isFollowed, setIsFollowed] = useState(false);
     const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
     const [currentUser, setCurrentUser] = useState<UserResponseDTO>();
-    const [selectedButton, setSelectedButton] = useState<'Posts'|'Me gusta'|'Respuestas'|'Multimedia'|null>('Posts');
+    const [selectedButton, setSelectedButton] = useState<'Posts' | 'Me gusta' | 'Respuestas' | 'Multimedia' | null>('Posts');
     const [lastId, setLastId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const scrollHandlerActive = useRef(false);
@@ -144,7 +144,7 @@ const ProfilePage = () => {
                         .then((response) => {
                             if (response && response.length > 0) {
                                 setTweets(prev => [...prev, ...response]);
-                                setLastId (response[response.length - 1].id);
+                                setLastId(response[response.length - 1].id);
                             }
                         })
                         .catch(err => console.error("Error loading more tweets:", err))
@@ -157,12 +157,10 @@ const ProfilePage = () => {
                             }, 50);
                         });
                 }
-
-
             }
         };
 
-        // Solo agregar el event listener si estamos en la pestaña "Para ti" y tenemos un lastId
+        // Solo agregar el event listener si tenemos un currentUser y tenemos un lastId
         if (currentUser) {
             window.addEventListener('scroll', handleScroll);
         }
@@ -193,7 +191,7 @@ const ProfilePage = () => {
             })
     }
 
-    const handleButtonClick = (buttonName: 'Posts'|'Me gusta'|'Respuestas'|'Multimedia'|null) => {
+    const handleButtonClick = (buttonName: 'Posts' | 'Me gusta' | 'Respuestas' | 'Multimedia' | null) => {
         setSelectedButton(buttonName);
         if (buttonName === 'Posts') {
             TweetService.getTweetsByUsername(username, null).then((response) => {

@@ -66,9 +66,9 @@ const TweetService = {
                 .catch(error => { reject(error) })
         })
     },
-    async getComments(id: number): Promise<TweetResponseDTO[]> {
+    async getComments(parentId: number, id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/comments/${id}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/comments/${parentId}${id ? `?id=${id}` : ''}`)
                 .then((response) => { resolve(response.data as TweetResponseDTO[]) })
                 .catch(error => { reject(error) })
         })
@@ -80,7 +80,7 @@ const TweetService = {
                 .catch(error => { reject(error) })
         })
     },
-    async getTweetsWithImagesByUsername(username: string, id:number|null): Promise<TweetResponseDTO[]> {
+    async getTweetsWithImagesByUsername(username: string, id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
             axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/with-image/${username}${id ? `?id=${id}` : ''}`)
                 .then((response) => { resolve(response.data as TweetResponseDTO[]) })
@@ -115,9 +115,9 @@ const TweetService = {
                 .catch(error => { reject(error) })
         })
     },
-    async getSavedTweets(username: String): Promise<TweetResponseDTO[]> {
+    async getSavedTweets(username: String, id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/saves/${username}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/saves/${username}${id ? `?id=${id}` : ''}`)
                 .then(response => {
                     resolve(response.data);
                 })
