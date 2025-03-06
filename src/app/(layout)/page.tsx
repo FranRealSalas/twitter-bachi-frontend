@@ -28,7 +28,7 @@ export default function Home() {
         const response = await TweetService.getTweets(null);
         if (response && response.length > 0) {
           setTweets(response);
-          setLastId(response[response.length - 1].id);
+          setLastId(response[response.length - 1].id); 
         }
       } catch (error) {
         console.error("Error loading initial tweets:", error);

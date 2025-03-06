@@ -7,12 +7,12 @@ import UserService from "@/services/UserService";
 import { TweetResponseDTO } from "@/types/tweet";
 import { UserResponseDTO } from "@/types/user";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { set, useForm } from "react-hook-form";
 import { redirect } from 'next/navigation';
 
 const ProfilePage = () => {
-    const [tweets, setTweets] = useState<TweetResponseDTO[]>();
+    const [tweets, setTweets] = useState<TweetResponseDTO[]>([]);
     const [uploadProfileImageOpen, setUploadProfileImageOpen] = useState(false);
     const [uploadCoverImageOpen, setUploadCoverImageOpen] = useState(false);
     const { username } = useParams<{ username: string }>();
@@ -20,7 +20,10 @@ const ProfilePage = () => {
     const [isFollowed, setIsFollowed] = useState(false);
     const [loggedUser, setLoggedUser] = useState<UserResponseDTO>();
     const [currentUser, setCurrentUser] = useState<UserResponseDTO>();
-    const [selectedButton, setSelectedButton] = useState('Posts');
+    const [selectedButton, setSelectedButton] = useState<'Posts'|'Me gusta'|'Respuestas'|'Multimedia'|null>('Posts');
+    const [lastId, setLastId] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const scrollHandlerActive = useRef(false);
 
     useEffect(() => {
         UserService.getLoggedUser().then((response) => {
@@ -36,11 +39,139 @@ const ProfilePage = () => {
             })
     }, []);
 
+    // Cargar tweets iniciales
     useEffect(() => {
-        TweetService.getTweetsByUsername(username).then((response) => {
-            setTweets(response);
-        })
+        const fetchInitialTweets = async () => {
+            try {
+                if (selectedButton == "Posts") {
+                    setIsLoading(true);
+                    const response = await TweetService.getTweetsByUsername(username, null);
+                    if (response && response.length > 0) {
+                        setTweets(response);
+                        setLastId(response[response.length - 1].id);
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading initial tweets:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchInitialTweets();
     }, []);
+
+    // Configura el detector de scroll
+    useEffect(() => {
+        // Función que detecta si hemos llegado al final del scroll
+        const handleScroll = () => {
+            // Guardar las medidas actuales de la página
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+            // Calcular cuántos pixels faltan para llegar al final
+            const distanceToBottom = documentHeight - (scrollTop + windowHeight);
+
+            // Verificar si estamos a menos de 50px del final
+            const isNearBottom = distanceToBottom < 50;
+
+            // Solo cargar más tweets si estamos cerca del final y no estamos ya cargando
+            if (isNearBottom && !isLoading && lastId && !scrollHandlerActive.current) {
+                console.log("Cerca del final, cargando más tweets...");
+                scrollHandlerActive.current = true; // Evitar múltiples disparos
+
+                if (selectedButton == "Posts") {
+                    setIsLoading(true);
+                    TweetService.getTweetsByUsername(username, lastId)
+                        .then((response) => {
+                            if (response && response.length > 0) {
+                                setTweets(prev => [...prev, ...response]);
+                                setLastId(response[response.length - 1].id);
+                            }
+                        })
+                        .catch(err => console.error("Error loading more tweets:", err))
+                        .finally(() => {
+                            setIsLoading(false);
+
+                            // Reactivar el handler después de un breve retraso
+                            setTimeout(() => {
+                                scrollHandlerActive.current = false;
+                            }, 50);
+                        });
+                }
+                if (selectedButton == "Me gusta") {
+                    setIsLoading(true);
+                    TweetService.getLikedTweets(username, lastId)
+                        .then((response) => {
+                            if (response && response.length > 0) {
+                                setTweets(prev => [...prev, ...response]);
+                                setLastId(response[response.length - 1].id);
+                            }
+                        })
+                        .catch(err => console.error("Error loading more tweets:", err))
+                        .finally(() => {
+                            setIsLoading(false);
+
+                            // Reactivar el handler después de un breve retraso
+                            setTimeout(() => {
+                                scrollHandlerActive.current = false;
+                            }, 50);
+                        });
+                }
+                if (selectedButton == "Respuestas") {
+                    setIsLoading(true);
+                    TweetService.getCommentsByUsername(username, lastId)
+                        .then((response) => {
+                            if (response && response.length > 0) {
+                                setTweets(prev => [...prev, ...response]);
+                                setLastId(response[response.length - 1].id);
+                            }
+                        })
+                        .catch(err => console.error("Error loading more tweets:", err))
+                        .finally(() => {
+                            setIsLoading(false);
+
+                            // Reactivar el handler después de un breve retraso
+                            setTimeout(() => {
+                                scrollHandlerActive.current = false;
+                            }, 50);
+                        });
+                }
+                if (selectedButton == "Multimedia") {
+                    setIsLoading(true);
+                    TweetService.getTweetsWithImagesByUsername(username, lastId)
+                        .then((response) => {
+                            if (response && response.length > 0) {
+                                setTweets(prev => [...prev, ...response]);
+                                setLastId (response[response.length - 1].id);
+                            }
+                        })
+                        .catch(err => console.error("Error loading more tweets:", err))
+                        .finally(() => {
+                            setIsLoading(false);
+
+                            // Reactivar el handler después de un breve retraso
+                            setTimeout(() => {
+                                scrollHandlerActive.current = false;
+                            }, 50);
+                        });
+                }
+
+
+            }
+        };
+
+        // Solo agregar el event listener si estamos en la pestaña "Para ti" y tenemos un lastId
+        if (currentUser) {
+            window.addEventListener('scroll', handleScroll);
+        }
+
+        // Limpiar event listener cuando el componente se desmonte
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [isLoading, lastId, currentUser]); // Dependencias importantes
 
     async function handleUploadProfileImage(e: any) {
         UserService.uploadProfileImage(e.profilePhoto[0])
@@ -62,26 +193,30 @@ const ProfilePage = () => {
             })
     }
 
-    const handleButtonClick = (buttonName: string) => {
+    const handleButtonClick = (buttonName: 'Posts'|'Me gusta'|'Respuestas'|'Multimedia'|null) => {
         setSelectedButton(buttonName);
         if (buttonName === 'Posts') {
-            TweetService.getTweetsByUsername(username).then((response) => {
+            TweetService.getTweetsByUsername(username, null).then((response) => {
                 setTweets(response);
+                setLastId(response[response.length - 1].id);
             })
         }
         if (buttonName === 'Me gusta') {
-            TweetService.getLikedTweets(username).then((response) => {
+            TweetService.getLikedTweets(username, null).then((response) => {
                 setTweets(response);
+                setLastId(response[response.length - 1].id);
             })
         }
         if (buttonName === 'Respuestas') {
-            TweetService.getCommentsByUsername(username).then((response) => {
+            TweetService.getCommentsByUsername(username, null).then((response) => {
                 setTweets(response);
+                setLastId(response[response.length - 1].id);
             })
         }
         if (buttonName === 'Multimedia') {
-            TweetService.getTweetsWithImagesByUsername(username).then((response) => {
+            TweetService.getTweetsWithImagesByUsername(username, null).then((response) => {
                 setTweets(response);
+                setLastId(response[response.length - 1].id);
             })
         }
     };
@@ -99,7 +234,7 @@ const ProfilePage = () => {
                         </button>
                         <div className="flex flex-col w-full items-start">
                             <h2 className="text-lg">{currentUser?.username} </h2>
-                            <h3 className="text-sm text-gray-500">{tweets ? tweets.length + " posts" : "0 posts"} </h3>
+                            <h3 className="text-sm text-gray-500">{currentUser?.countTweets} posts </h3>
                         </div>
                     </div>
                 </div>

@@ -3,9 +3,9 @@ import { TweetResponseDTO } from "@/types/tweet";
 import { AxiosError } from "axios";
 
 const TweetService = {
-    async getTweets(id: number|null): Promise<TweetResponseDTO[]> {
+    async getTweets(id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets${id?`?id=${id}`:''}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets${id ? `?id=${id}` : ''}`)
                 .then(response => {
                     resolve(response.data);
                 })
@@ -27,10 +27,10 @@ const TweetService = {
     },
     async createTweets(content: String, fileList: FileList, parentTweetId?: number): Promise<TweetResponseDTO> {
         const formData = new FormData();
-            for (let i = 0; i < fileList?.length; i++) {
-                formData.append("images", new Blob([fileList.item(i)!],{type : fileList.item(i)!.type}));
-            }
-        formData.append('content', new Blob([JSON.stringify({ content, parentTweetId })],{type: "application/json"}))
+        for (let i = 0; i < fileList?.length; i++) {
+            formData.append("images", new Blob([fileList.item(i)!], { type: fileList.item(i)!.type }));
+        }
+        formData.append('content', new Blob([JSON.stringify({ content, parentTweetId })], { type: "application/json" }))
 
         return new Promise((resolve, reject) => {
             axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets`, formData)
@@ -59,9 +59,9 @@ const TweetService = {
                 .catch(error => { reject(error) })
         })
     },
-    async getTweetsByUsername(username: string): Promise<TweetResponseDTO[]> {
+    async getTweetsByUsername(username: string, id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/by-username/${username}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/by-username/${username}${id ? `?id=${id}` : ''}`)
                 .then((response) => { resolve(response.data as TweetResponseDTO[]) })
                 .catch(error => { reject(error) })
         })
@@ -73,16 +73,16 @@ const TweetService = {
                 .catch(error => { reject(error) })
         })
     },
-    async getCommentsByUsername(username:string): Promise<TweetResponseDTO[]> {
+    async getCommentsByUsername(username: string, id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/comments/by-username/${username}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/comments/by-username/${username}${id ? `?id=${id}` : ''}`)
                 .then((response) => { resolve(response.data as TweetResponseDTO[]) })
                 .catch(error => { reject(error) })
         })
     },
-    async getTweetsWithImagesByUsername(username:string): Promise<TweetResponseDTO[]> {
+    async getTweetsWithImagesByUsername(username: string, id:number|null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/with-image/${username}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/tweets/with-image/${username}${id ? `?id=${id}` : ''}`)
                 .then((response) => { resolve(response.data as TweetResponseDTO[]) })
                 .catch(error => { reject(error) })
         })
@@ -126,9 +126,9 @@ const TweetService = {
                 });
         });
     },
-    async getLikedTweets(username: String): Promise<TweetResponseDTO[]> {
+    async getLikedTweets(username: String, id: number | null): Promise<TweetResponseDTO[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/likes/${username}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/likes/${username}${id ? `?id=${id}` : ''}`)
                 .then(response => {
                     resolve(response.data);
                 })

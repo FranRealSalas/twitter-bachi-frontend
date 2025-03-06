@@ -14,7 +14,8 @@ export type UserResponseDTO = {
     id: number;
     editableName: string;
     username: string;
-    email: string
+    email: string;
+    countTweets: number;
     admin: boolean;
     roles: Role[];
     follow: boolean;
