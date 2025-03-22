@@ -288,7 +288,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                     </a>
 
                     <PostModal open={openPostButtonNavbar} setModalOpen={setOpenPostButtonNavbar}>
-                        <form className="flex w-full h-40 border border-gray-400 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
+                        <form className="flex w-full h-40 p-5" onSubmit={handleSubmit(handleCreateTweet)}>
                             <div className="flex w-full flex-row justify-between items-center gap-2">
                                 <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${Tweet.user.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-12 h-12 rounded-full" />
                                 <input type="text"

@@ -96,8 +96,8 @@ const TweetPage = () => {
         <>
             {tweet ?
                 (
-                    <>
-                        <div className="flex flex-col border border-gray-400 w-full" >
+                    <div className="border border-gray-400">
+                        <div className="flex flex-col border-b border-gray-400 w-full" >
                             <div className="w-full flex items-center sticky top-0 z-50 backdrop-blur-sm">
                                 <div className="flex flex-row h-full p-1 gap-2">
                                     <button className="flex h-full items-center" onClick={() => history.back()}>
@@ -121,7 +121,7 @@ const TweetPage = () => {
 
                                         {comments.length > 0 ?
                                             comments.map(comment => (
-                                                <div key={comment.id} className="w-full border border-gray-400">
+                                                <div key={comment.id} className="w-full border-b border-gray-400">
                                                     <TweetComponent Tweet={comment} setTweets={setComments}></TweetComponent>
                                                 </div>
                                             )
@@ -137,7 +137,7 @@ const TweetPage = () => {
                                 }
                             </div>
                         </div>
-                    </>
+                    </div>
                 ) : (
                     <p>Cargando...</p>
                 )}

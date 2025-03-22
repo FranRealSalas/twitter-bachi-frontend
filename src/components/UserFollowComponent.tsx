@@ -29,7 +29,7 @@ function UserFollowComponent({ username, editableName }: UserFollowComponentProp
     }, []);
 
     return (
-        <div className="flex flex-row justify-between items-center p-2 hover:bg-gray-400">
+        <div className="flex flex-row justify-between items-center p-2 hover:bg-gray-400 rounded-3xl">
             <div className="flex flex-row gap-3 items-center w-2/3 overflow-hidden">
                 <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${username}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-10 h-10 rounded-full" />
                 <a href={`/users/${username}`}>
@@ -41,7 +41,7 @@ function UserFollowComponent({ username, editableName }: UserFollowComponentProp
             </div>
             <div className="flex justify-end h-2/5 w-1/3">
                 <button
-                    className={`h-fit w-24 border rounded-xl ${`${isFollowed ? "bg-gray-700" : "bg-sky-500"}`}`}
+                    className={`h-fit w-24 border border-gray-400 rounded-xl ${`${isFollowed ? "bg-gray-700" : "bg-sky-500"}`}`}
                     onClick={() => {
 
                         if (currentUser?.username != loggedUser?.username) {

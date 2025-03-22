@@ -18,8 +18,8 @@ const configurationPage = () => {
   }, []);
 
   return (
-    <div>
-      <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
+    <div className="border border-gray-400">
+      <div className="w-full flex items-center sticky top-0 z-50 border-b border-gray-400 backdrop-blur-sm">
         <div className="flex flex-row h-14 p-1 gap-2">
           <button className="flex h-full items-center" onClick={() => history.back()}>
             <span className="material-symbols-outlined">
@@ -33,7 +33,7 @@ const configurationPage = () => {
       </div>
       <div className="flex flex-col">
         <button
-          className="border w-full h-16 flex items-center px-2"
+          className="w-full h-16 flex items-center px-2"
           onClick={() => {
             setTimeout(() => {
               setEditProfileOpen(!editProfileOpen)

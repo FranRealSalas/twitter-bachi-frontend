@@ -84,8 +84,8 @@ const savesPage = () => {
   }, [isLoading, lastId, username]); // Dependencias importantes
 
   return (
-    <div>
-      <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
+    <div className="border border-gray-400">
+      <div className="w-full flex items-center sticky top-0 z-50 border-b border-gray-400 backdrop-blur-sm">
         <div className="flex flex-row h-14 p-1 gap-2">
           <button className="flex h-full items-center" onClick={() => history.back()}>
             <span className="material-symbols-outlined">
@@ -101,7 +101,7 @@ const savesPage = () => {
         {savedTweets ? (
           <div className="flex flex-col">
             {savedTweets.map(savedTweet => (
-              <div key={savedTweet.id} className="w-full border border-grey-400">
+              <div key={savedTweet.id} className="w-full border-b border-gray-400">
                 <TweetComponent Tweet={savedTweet} setTweets={setSavedTweets}></TweetComponent>
               </div>
             )

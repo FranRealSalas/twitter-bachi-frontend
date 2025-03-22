@@ -17,8 +17,8 @@ const NotificationsPage = () => {
     }, []);
 
     return (
-        <div>
-            <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
+        <div className="border border-gray-400">
+            <div className="w-full flex items-center sticky top-0 z-50 border-b border-gray-400 backdrop-blur-sm">
                 <div className="flex flex-row h-14 p-1 gap-2">
                     <button className="flex h-full items-center" onClick={() => history.back()}>
                         <span className="material-symbols-outlined">
@@ -34,7 +34,7 @@ const NotificationsPage = () => {
                 {userNotifications ? (
                     <div className="flex flex-col">
                         {userNotifications.map(userNotifications => (
-                            <div key={userNotifications.id} className="w-full min-w-fit border border-grey-400">
+                            <div key={userNotifications.id} className="w-full min-w-fit border-b border-gray-400">
                                 <div className="flex flex-row p-3">
                                     <span>
                                         {userNotifications.notification.icon === "follow_icon" ?

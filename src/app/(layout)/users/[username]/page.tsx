@@ -221,9 +221,9 @@ const ProfilePage = () => {
 
 
     return (
-        <>
+        <div className="border border-gray-400">
             <div className="flex flex-col w-full">
-                <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
+                <div className="w-full flex items-center sticky top-0 z-50 backdrop-blur-sm">
                     <div className="flex flex-row h-14 p-1 gap-2 w-full">
                         <button className="flex h-full items-center" onClick={() => history.back()}>
                             <span className="material-symbols-outlined">
@@ -237,7 +237,7 @@ const ProfilePage = () => {
                     </div>
                 </div>
                 <div>
-                    <div className="flex flex-col border border-gray-400">
+                    <div className="flex flex-col">
                         <div className="relative">
                             <img
                                 onClick={() => {
@@ -245,7 +245,7 @@ const ProfilePage = () => {
                                         setUploadCoverImageOpen(!uploadCoverImageOpen)
                                     }, 100)
                                 }}
-                                className="w-full h-48 z-0 border-b"
+                                className="w-full h-48 z-0"
                                 src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/cover/img/${currentUser?.coverPhoto}`}
                                 onError={(e) => e.currentTarget.src = "https://i.pinimg.com/736x/d8/61/19/d86119efae3acd37391c4c1a9f130529.jpg"}
                             />
@@ -334,7 +334,7 @@ const ProfilePage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-row w-full border justify-evenly p-2">
+                <div className="flex flex-row w-full border-y border-gray-400 justify-evenly p-2">
                     <button
                         className={selectedButton === 'Posts' ? 'border-b-2 border-sky-500' : ''}
                         onClick={() => handleButtonClick('Posts')}
@@ -365,7 +365,7 @@ const ProfilePage = () => {
                         {tweets ? (
                             <div className="flex flex-col">
                                 {tweets.map(Tweet => (
-                                    <div key={Tweet.id} className="w-full border border-gray-400">
+                                    <div key={Tweet.id} className="w-full border-b border-gray-400">
                                         <TweetComponent Tweet={Tweet} setTweets={setTweets}></TweetComponent>
                                     </div>
                                 ))
@@ -380,7 +380,7 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 
 }

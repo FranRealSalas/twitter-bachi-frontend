@@ -99,9 +99,8 @@ const PostForm: React.FC<PostFormProps> = ({ setTweets }) => {
     };
 
     return (
-
         <div>
-            <form className="flex w-full h-32 border-gray-400 p-5 min-w-fit" onSubmit={handleSubmit(handleCreateTweet)}>
+            <form className="flex w-full h-32 p-5 min-w-fit" onSubmit={handleSubmit(handleCreateTweet)}>
                 <div className="flex flex-col w-full gap-3">
                     <div className="flex w-full flex-row justify-between items-center gap-2">
                         <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}api/users/uploads/profile/img/${loggedUser?.profilePhoto}`} onError={(e) => e.currentTarget.src = "https://assets-staging.autoplants.cloud/default.jpg"} className="w-14 h-14 rounded-full" />

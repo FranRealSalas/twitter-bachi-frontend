@@ -8,7 +8,7 @@ function Modal({ children, open, setOpen }: { children: ReactNode, open: boolean
     return (
         <>
             <div className={`flex flex-col inset-0 z-50 items-center w-full ${open ? "block":" hidden"}`}>
-                <div className="border border-gray-400 flex w-full rounded-xl shadow-lg bg-black p-4 items-center" ref={modalRef}>
+                <div className="border border-gray-400 flex flex-col w-full rounded-xl shadow-lg bg-black p-4 items-start" ref={modalRef}>
                     {children}
                 </div>
             </div>

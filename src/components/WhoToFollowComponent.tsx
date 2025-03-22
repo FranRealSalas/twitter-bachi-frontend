@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import UserSearchComponent from './UserSearchComponent';
 import { User, UserResponseDTO } from '@/types/user';
 import UserService from '@/services/UserService';
 import Modal from './modals/Modal';
@@ -23,7 +22,7 @@ const WhoToFollowComponent = () => {
     }, []);
 
     return (
-        <div className="border rounded-2xl p-2">
+        <div className="border border-gray-400 rounded-2xl p-2">
             <h2 className="text-2xl">A quién seguir</h2>
             <div className="flex flex-col w-full">
                 {

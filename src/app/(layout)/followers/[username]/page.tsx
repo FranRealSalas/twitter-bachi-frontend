@@ -25,8 +25,8 @@ const FollowersPage = () => {
   }, []);
 
   return (
-    <div>
-      <div className="w-full flex items-center sticky top-0 z-50 border border-gray-400 backdrop-blur-sm">
+    <div className="border border-gray-400">
+      <div className="w-full flex items-center sticky top-0 z-50  border-gray-400 backdrop-blur-sm">
         <div className="flex flex-row h-14 p-1 gap-2">
           <button className="flex h-full items-center" onClick={() => history.back()}>
             <span className="material-symbols-outlined">
@@ -40,19 +40,19 @@ const FollowersPage = () => {
         </div>
       </div>
       <div className="h-14 w-full sticky top-0 backdrop-blur-sm">
-        <div className="flex flex-row z-50">
+        <div className="flex flex-row z-50 border-y border-b-0">
           <button
             onClick={() => {
               redirect(`/followers/${username}`)
             }}
-            className={`flex h-14 w-1/2 justify-center items-center hover:bg-gray-400 border border-gray-400`}>
+            className={`flex h-14 w-1/2 justify-center items-center hover:bg-gray-400 border-r  border-gray-400`}>
             <span className='border-b-2 border-sky-500'>Seguidores</span>
           </button>
           <button
             onClick={() => {
               redirect(`/followings/${username}`)
             }}
-            className={`flex w-1/2 h-14 justify-center items-center hover:bg-gray-400 border-[.1px] border-gray-400`}>
+            className={`flex w-1/2 h-14 justify-center items-center hover:bg-gray-400 border-gray-400`}>
             <span>Siguiendo</span>
           </button>
         </div>
@@ -61,7 +61,7 @@ const FollowersPage = () => {
         {followRelation ? (
           <div className="flex flex-col">
             {followRelation.map(FollowRelation => (
-              <div key={FollowRelation.id} className="w-full min-w-fit border border-grey-400">
+              <div key={FollowRelation.id} className="w-full min-w-fit border-t border-grey-400">
                 <UserFollowComponent username={FollowRelation.follower.username} editableName={FollowRelation.follower.editableName}></UserFollowComponent>
               </div>
             )
