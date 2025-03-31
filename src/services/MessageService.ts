@@ -15,9 +15,9 @@ const MessageService = {
                 });
         });
     },
-    async getAllMessagesByChatId(chatId: number): Promise<Message[]> {
+    async getAllMessagesByChatId(chatId: number|null, id:number|null): Promise<Message[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/messages/${chatId}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/messages/${chatId}${id ? `?id=${id}` : ''}`)
                 .then(response => {
                     resolve(response.data);
                 })

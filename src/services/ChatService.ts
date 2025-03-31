@@ -13,9 +13,9 @@ const ChatService = {
                 });
         });
     },
-    async getChats(): Promise<Chat[]> {
+    async getChats(id:number|null): Promise<Chat[]> {
         return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats${id ? `?id=${id}` : ''}`)
                 .then(response => {
                     resolve(response.data);
                 })

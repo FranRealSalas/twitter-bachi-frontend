@@ -4,5 +4,6 @@ import { UserMessage, UserResponseDTO } from "./user";
 export type Chat = {
     id: number;
     users: UserMessage[];
-    messages: Message[]
+    messages: Message[];
+    date: Date;
 }
