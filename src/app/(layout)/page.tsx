@@ -15,6 +15,7 @@ export default function Home() {
   const [lastId, setLastId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const scrollHandlerActive = useRef(false);
+  const [isOnEndScroll, setIsOnEndScroll] = useState(false);
 
   if (!isLogged()) {
     redirect(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`);
@@ -29,6 +30,9 @@ export default function Home() {
         if (response && response.length > 0) {
           setTweets(response);
           setLastId(response[response.length - 1].id);
+        }
+        else {
+          setIsOnEndScroll(true);
         }
       } catch (error) {
         console.error("Error loading initial tweets:", error);
@@ -60,23 +64,29 @@ export default function Home() {
         console.log("Cerca del final, cargando más tweets...");
         scrollHandlerActive.current = true; // Evitar múltiples disparos
 
-        setIsLoading(true);
-        TweetService.getTweets(lastId)
-          .then((response) => {
-            if (response && response.length > 0) {
-              setTweets(prev => [...prev, ...response]);
-              setLastId(response[response.length - 1].id);
-            }
-          })
-          .catch(err => console.error("Error loading more tweets:", err))
-          .finally(() => {
-            setIsLoading(false);
+        if (!isOnEndScroll) {
+          setIsLoading(true);
+          TweetService.getTweets(lastId)
+            .then((response) => {
+              if (response && response.length > 0) {
+                setTweets(prev => [...prev, ...response]);
+                setLastId(response[response.length - 1].id);
+                setIsLoading(false);
+              }
+              else {
+                setIsOnEndScroll(true);
+              }
+            })
+            .catch(err => console.error("Error loading more tweets:", err))
+            .finally(() => {
+              setIsLoading(false);
 
-            // Reactivar el handler después de un breve retraso
-            setTimeout(() => {
-              scrollHandlerActive.current = false;
-            }, 50);
-          });
+              // Reactivar el handler después de un breve retraso
+              setTimeout(() => {
+                scrollHandlerActive.current = false;
+              }, 50);
+            });
+        }
       }
     };
 

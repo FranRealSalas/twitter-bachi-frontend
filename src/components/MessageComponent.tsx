@@ -1,8 +1,8 @@
-import { UserMessage, UserResponseDTO } from "@/types/user";
+import { UserResponseDTO } from "@/types/user";
 
 interface MessageComponentProps {
     text: string;
-    sender: UserMessage | undefined;
+    sender: UserResponseDTO | undefined;
     loggedUser: UserResponseDTO| undefined;
 }
 

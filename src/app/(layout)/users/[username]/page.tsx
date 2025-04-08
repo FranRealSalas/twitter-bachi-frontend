@@ -24,6 +24,7 @@ const ProfilePage = () => {
     const [lastId, setLastId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const scrollHandlerActive = useRef(false);
+    const [lastResponseScroll, setLastResponseScroll] = useState<TweetResponseDTO[]>([]);
 
     useEffect(() => {
         UserService.getLoggedUser().then((response) => {
@@ -49,6 +50,7 @@ const ProfilePage = () => {
                     if (response && response.length > 0) {
                         setTweets(response);
                         setLastId(response[response.length - 1].id);
+                        setLastResponseScroll(response);
                     }
                 }
             } catch (error) {
@@ -83,79 +85,103 @@ const ProfilePage = () => {
 
                 if (selectedButton == "Posts") {
                     setIsLoading(true);
-                    TweetService.getTweetsByUsername(username, lastId)
-                        .then((response) => {
-                            if (response && response.length > 0) {
-                                setTweets(prev => [...prev, ...response]);
-                                setLastId(response[response.length - 1].id);
-                            }
-                        })
-                        .catch(err => console.error("Error loading more tweets:", err))
-                        .finally(() => {
-                            setIsLoading(false);
+                    if (lastResponseScroll.length > 0) {
+                        TweetService.getTweetsByUsername(username, lastId)
+                            .then((response) => {
+                                setLastResponseScroll(response);
+                                if (response && response.length > 0) {
+                                    setTweets(prev => [...prev, ...response]);
+                                    setLastId(response[response.length - 1].id);
+                                }
+                            })
+                            .catch(err => console.error("Error loading more tweets:", err))
+                            .finally(() => {
+                                setIsLoading(false);
 
-                            // Reactivar el handler después de un breve retraso
-                            setTimeout(() => {
-                                scrollHandlerActive.current = false;
-                            }, 50);
-                        });
+                                // Reactivar el handler después de un breve retraso
+                                setTimeout(() => {
+                                    scrollHandlerActive.current = false;
+                                }, 50);
+                            });
+                    }
+                    else{
+                        setIsLoading(false);
+                    }
                 }
                 if (selectedButton == "Me gusta") {
                     setIsLoading(true);
-                    TweetService.getLikedTweets(username, lastId)
-                        .then((response) => {
-                            if (response && response.length > 0) {
-                                setTweets(prev => [...prev, ...response]);
-                                setLastId(response[response.length - 1].id);
-                            }
-                        })
-                        .catch(err => console.error("Error loading more tweets:", err))
-                        .finally(() => {
-                            setIsLoading(false);
+                    if (lastResponseScroll.length > 0) {
+                        TweetService.getLikedTweets(username, lastId)
+                            .then((response) => {
+                                setLastResponseScroll(response);
+                                if (response && response.length > 0) {
+                                    setTweets(prev => [...prev, ...response]);
+                                    setLastId(response[response.length - 1].id);
+                                }
+                            })
+                            .catch(err => console.error("Error loading more tweets:", err))
+                            .finally(() => {
+                                setIsLoading(false);
 
-                            // Reactivar el handler después de un breve retraso
-                            setTimeout(() => {
-                                scrollHandlerActive.current = false;
-                            }, 50);
-                        });
+                                // Reactivar el handler después de un breve retraso
+                                setTimeout(() => {
+                                    scrollHandlerActive.current = false;
+                                }, 50);
+                            });
+                    }
+                    else{
+                        setIsLoading(false);
+                    }
                 }
                 if (selectedButton == "Respuestas") {
                     setIsLoading(true);
-                    TweetService.getCommentsByUsername(username, lastId)
-                        .then((response) => {
-                            if (response && response.length > 0) {
-                                setTweets(prev => [...prev, ...response]);
-                                setLastId(response[response.length - 1].id);
-                            }
-                        })
-                        .catch(err => console.error("Error loading more tweets:", err))
-                        .finally(() => {
-                            setIsLoading(false);
+                    if (lastResponseScroll.length > 0) {
+                        TweetService.getCommentsByUsername(username, lastId)
+                            .then((response) => {
+                                setLastResponseScroll(response);
+                                if (response && response.length > 0) {
+                                    setTweets(prev => [...prev, ...response]);
+                                    setLastId(response[response.length - 1].id);
+                                }
+                            })
+                            .catch(err => console.error("Error loading more tweets:", err))
+                            .finally(() => {
+                                setIsLoading(false);
 
-                            // Reactivar el handler después de un breve retraso
-                            setTimeout(() => {
-                                scrollHandlerActive.current = false;
-                            }, 50);
-                        });
+                                // Reactivar el handler después de un breve retraso
+                                setTimeout(() => {
+                                    scrollHandlerActive.current = false;
+                                }, 50);
+                            });
+                    }
+                    else{
+                        setIsLoading(false);
+                    }
                 }
                 if (selectedButton == "Multimedia") {
                     setIsLoading(true);
-                    TweetService.getTweetsWithImagesByUsername(username, lastId)
-                        .then((response) => {
-                            if (response && response.length > 0) {
-                                setTweets(prev => [...prev, ...response]);
-                                setLastId(response[response.length - 1].id);
-                            }
-                        })
-                        .catch(err => console.error("Error loading more tweets:", err))
-                        .finally(() => {
-                            setIsLoading(false);
+                    if (lastResponseScroll.length > 0) {
+                        TweetService.getTweetsWithImagesByUsername(username, lastId)
+                            .then((response) => {
+                                setLastResponseScroll(response);
+                                if (response && response.length > 0) {
+                                    setTweets(prev => [...prev, ...response]);
+                                    setLastId(response[response.length - 1].id);
+                                }
+                            })
+                            .catch(err => console.error("Error loading more tweets:", err))
+                            .finally(() => {
+                                setIsLoading(false);
 
-                            // Reactivar el handler después de un breve retraso
-                            setTimeout(() => {
-                                scrollHandlerActive.current = false;
-                            }, 50);
-                        });
+                                // Reactivar el handler después de un breve retraso
+                                setTimeout(() => {
+                                    scrollHandlerActive.current = false;
+                                }, 50);
+                            });
+                    }
+                    else{
+                        setIsLoading(false);
+                    }
                 }
             }
         };

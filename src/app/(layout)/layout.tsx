@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="bg-black bg-cover bg-fixed bg-no-repeat w-full h-full text-white scrollbar scrollbar-track-black scrollbar-thumb-gray-100">
+    <html lang="es" className="bg-black bg-cover bg-fixed bg-no-repeat w-full h-full text-white scrollbar scrollbar-track-black scrollbar-thumb-customGrayChat">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
       </head>

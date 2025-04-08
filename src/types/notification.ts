@@ -13,5 +13,4 @@ export type UserNotification = {
     id: number;
     user: UserResponseDTO;
     notification: Notification;
-    readed: boolean;
 }

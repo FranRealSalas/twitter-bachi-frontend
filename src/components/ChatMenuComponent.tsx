@@ -3,25 +3,24 @@ import ChatComponent from './ChatComponent';
 import MessageComponent from './MessageComponent';
 import { UserResponseDTO } from '@/types/user';
 import UserService from '@/services/UserService';
-import { Chat } from '@/types/chat';
+import { Chat, ChatResponseDTO } from '@/types/chat';
 import Modal from './modals/Modal';
 import UserSearchComponent from './UserSearchComponent';
 import ChatService from '@/services/ChatService';
 import { useForm } from 'react-hook-form';
-import { Message } from '@/types/message';
+import { Message, MessageResponseDTO } from '@/types/message';
 import MessageService from '@/services/MessageService';
-import { randomUUID } from 'crypto';
 
 const ChatMenuComponent = () => {
     const [chatMenuOpen, setChatMenuOpen] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
     const [loggedUser, setLoggedUser] = useState<UserResponseDTO | undefined>();
-    const [currentChat, setCurrentChat] = useState<Chat>();
+    const [currentChat, setCurrentChat] = useState<ChatResponseDTO>();
     const [selectUserForChat, setSelectUserForChat] = useState(false)
     const [allUsersForChat, setAllUsersForChat] = useState<UserResponseDTO[] | null>(null);
-    const [allChats, setAllChats] = useState<Chat[]>([]);
-    const { register, handleSubmit } = useForm<Message>();
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [allChats, setAllChats] = useState<ChatResponseDTO[]>([]);
+    const { register, handleSubmit } = useForm<MessageResponseDTO>();
+    const [messages, setMessages] = useState<MessageResponseDTO[]>([]);
     const [lastIdMessages, setLastIdMessages] = useState<number | null>(null);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const scrollHandlerActiveMessages = useRef(false);
@@ -30,6 +29,8 @@ const ChatMenuComponent = () => {
     const [isLoadingChats, setIsLoadingChats] = useState(false);
     const scrollHandlerActiveChats = useRef(false);
     const scrollContainerChatsRef = useRef<HTMLDivElement>(null);
+    const [lastResponseChatScroll, setLastResponseChatScroll] = useState<ChatResponseDTO[]>([]);
+    const [lastResponseMessageScroll, setLastResponseMessageScroll] = useState<MessageResponseDTO[]>([]);
 
     useEffect(() => {
         UserService.getLoggedUser().then((response) => {
@@ -54,6 +55,7 @@ const ChatMenuComponent = () => {
                 if (response && response.length > 0) {
                     setAllChats(response);
                     setLastIdChats(response[response.length - 1].id);
+                    setLastResponseChatScroll(response);
                 }
             } catch (error) {
                 console.error('Error loading initial chats:', error);
@@ -68,47 +70,52 @@ const ChatMenuComponent = () => {
     useEffect(() => {
         const handleScroll = () => {
             const scrollContainer = scrollContainerChatsRef.current;
-    
+
             if (scrollContainer) {
                 const scrollTop = scrollContainer.scrollTop;
                 const clientHeight = scrollContainer.clientHeight;
                 const scrollHeight = scrollContainer.scrollHeight;
-    
+
                 // Verificar si estamos cerca del principio
                 const isNearBottom = scrollHeight - scrollTop - clientHeight <= 50; // Si estamos a menos de 50px del final
-    
+
                 // Solo cargar más chats si estamos cerca del principio y no estamos ya cargando
-                if (isNearBottom && !isLoadingChats && lastIdChats && !scrollHandlerActiveChats.current) {    
+                if (isNearBottom && !isLoadingChats && lastIdChats && !scrollHandlerActiveChats.current) {
                     scrollHandlerActiveChats.current = true; // Evitar múltiples disparos
-    
+
                     setIsLoadingChats(true);
                     // Llamada para cargar más chats
-                    ChatService.getChats(lastIdChats)
-                        .then((response) => {
-                            if (response && response.length > 0) {
-                                // Añadir los chats nuevos al principio
-                                setAllChats((prev) => [...response, ...prev]);
-                                setLastIdChats(response[response.length - 1].id);
-                            }
-                        })
-                        .catch((err) => console.error("Error cargando más chats:", err))
-                        .finally(() => {
-                            setIsLoadingChats(false);
-    
-                            // Reactivar el handler después de un breve retraso
-                            setTimeout(() => {
-                                scrollHandlerActiveChats.current = false;
-                            }, 50);
-                        });
+                    if (lastResponseChatScroll.length > 0) {
+                        ChatService.getChats(lastIdChats)
+                            .then((response) => {
+                                setLastResponseChatScroll(response);
+                                if (response && response.length > 0) {
+                                    // Añadir los chats nuevos al final
+                                    setAllChats((prev) => [...prev, ...response]);
+                                    setLastIdChats(response[response.length - 1].id);
+                                }
+                            })
+                            .catch((err) => console.error("Error cargando más chats:", err))
+                            .finally(() => {
+                                setIsLoadingChats(false);
+
+                                // Reactivar el handler después de un breve retraso
+                                setTimeout(() => {
+                                    scrollHandlerActiveChats.current = false;
+                                }, 50);
+                            });
+                    }
+                    else {
+                        setIsLoadingChats(false);
+                    }
                 }
             }
         };
-    
-        const scrollContainer = scrollContainerChatsRef.current;
+
         if (scrollContainerChatsRef.current) {
             scrollContainerChatsRef.current.addEventListener('scroll', handleScroll);
         }
-    
+
         // Limpiar el event listener cuando el componente se desmonte
         return () => {
             if (scrollContainerChatsRef.current) {
@@ -128,6 +135,7 @@ const ChatMenuComponent = () => {
                 if (response && response.length > 0) {
                     setMessages(response);
                     setLastIdMessages(response[response.length - 1].id);
+                    setLastResponseMessageScroll(response);
                 }
             } catch (error) {
                 console.error("Error loading initial messages:", error);
@@ -155,22 +163,28 @@ const ChatMenuComponent = () => {
                     scrollHandlerActiveMessages.current = true; // Evitar múltiples disparos
 
                     setIsLoadingMessages(true);
-                    MessageService.getAllMessagesByChatId(currentChat.id, lastIdMessages)
-                        .then((response) => {
-                            if (response && response.length > 0) {
-                                setMessages(prev => [...response, ...prev]);
-                                setLastIdMessages(response[response.length - 1].id);
-                            }
-                        })
-                        .catch(err => console.error("Error loading more messages:", err))
-                        .finally(() => {
-                            setIsLoadingMessages(false);
+                    if (lastResponseMessageScroll.length > 0) {
+                        MessageService.getAllMessagesByChatId(currentChat.id, lastIdMessages)
+                            .then((response) => {
+                                setLastResponseMessageScroll(response);
+                                if (response && response.length > 0) {
+                                    setMessages(prev => [...response, ...prev]);
+                                    setLastIdMessages(response[response.length - 1].id);
+                                }
+                            })
+                            .catch(err => console.error("Error loading more messages:", err))
+                            .finally(() => {
+                                setIsLoadingMessages(false);
 
-                            // Reactivar el handler después de un breve retraso
-                            setTimeout(() => {
-                                scrollHandlerActiveMessages.current = false;
-                            }, 50);
-                        });
+                                // Reactivar el handler después de un breve retraso
+                                setTimeout(() => {
+                                    scrollHandlerActiveMessages.current = false;
+                                }, 50);
+                            });
+                    }
+                    else {
+                        setIsLoadingMessages(false);
+                    }
                 }
             }
         };
@@ -205,7 +219,7 @@ const ChatMenuComponent = () => {
     }, [chatOpen]);
 
     const handleCreateMessage = (e: any) => {
-        MessageService.createMessage(e.content, loggedUser, currentChat);
+        MessageService.createMessage(e.content, loggedUser, currentChat?.id);
     }
 
     return (
@@ -328,7 +342,7 @@ const ChatMenuComponent = () => {
                                         <div className='max-h-80 flex flex-col gap-2 overflow-y-auto scrollbar scrollbar-track-black scrollbar-thumb-customGrayChat py-3' ref={scrollContainerChatsRef}>
                                             {
                                                 allChats ? (
-                                                    allChats.sort((a, b) => a.id - b.id).map((chat) => (
+                                                    allChats.sort((a, b) => b.id - a.id).map((chat) => (
                                                         <div key={`${chat.id}`}
                                                             onClick={() => {
                                                                 setCurrentChat(chat)
@@ -352,16 +366,6 @@ const ChatMenuComponent = () => {
                         <div className='flex flex-row justify-between p-2'>
                             <h1 className='text-lg'>Mensajes</h1>
                             <div className='flex gap-3'>
-                                <button onClick={() =>
-                                    setTimeout(() => {
-                                        setSelectUserForChat(true)
-                                    }, 100)}>
-                                    <svg viewBox="0 0 24 24" aria-hidden="true" className="fill-white w-5 h-5">
-                                        <g>
-                                            <path d="M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5V12h-2v-1.537l-8 3.635-8-3.635V18.5c0 .276.224.5.5.5H13v2H4.498c-1.381 0-2.5-1.119-2.5-2.5v-13zm2 2.766l8 3.635 8-3.635V5.5c0-.276-.224-.5-.5-.5h-15c-.276 0-.5.224-.5.5v2.766zM19 18v-3h2v3h3v2h-3v3h-2v-3h-3v-2h3z"></path>
-                                        </g>
-                                    </svg>
-                                </button>
                                 <button type='button' onClick={() => setChatMenuOpen(!chatMenuOpen)}>
                                     <svg viewBox="0 0 24 24" aria-hidden="true" className="fill-white w-5 h-5">
                                         <g>

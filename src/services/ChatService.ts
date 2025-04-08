@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios";
-import { Chat } from "@/types/chat";
+import { Chat, ChatResponseDTO } from "@/types/chat";
 
 const ChatService = {
     async createChat(usersId: number[]): Promise<Chat> {
@@ -13,7 +13,7 @@ const ChatService = {
                 });
         });
     },
-    async getChats(id:number|null): Promise<Chat[]> {
+    async getChats(id:number|null): Promise<ChatResponseDTO[]> {
         return new Promise((resolve, reject) => {
             axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats${id ? `?id=${id}` : ''}`)
                 .then(response => {

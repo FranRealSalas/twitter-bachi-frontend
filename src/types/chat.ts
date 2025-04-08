@@ -1,9 +1,17 @@
-import { Message } from "./message";
-import { UserMessage, UserResponseDTO } from "./user";
+import { Message, MessageResponseDTO } from "./message";
+import { UserResponseDTO } from "./user";
 
 export type Chat = {
     id: number;
-    users: UserMessage[];
+    users: UserResponseDTO[];
     messages: Message[];
+    date: Date;
+}
+
+export type ChatResponseDTO = {
+    id: number;
+    users: UserResponseDTO[];
+    messages: Message[];
+    lastMessage: MessageResponseDTO;
     date: Date;
 }

@@ -11,6 +11,7 @@ const savesPage = () => {
   const [lastId, setLastId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const scrollHandlerActive = useRef(false);
+  const [lastResponseScroll, setLastResponseScroll] = useState<TweetResponseDTO[]>([]);
 
   // Cargar tweets iniciales
   useEffect(() => {
@@ -21,6 +22,7 @@ const savesPage = () => {
         if (response && response.length > 0) {
           setSavedTweets(response);
           setLastId(response[response.length - 1].id);
+          setLastResponseScroll(response);
         }
       } catch (error) {
         console.error("Error loading initial tweets:", error);
@@ -53,22 +55,28 @@ const savesPage = () => {
         scrollHandlerActive.current = true; // Evitar múltiples disparos
 
         setIsLoading(true);
-        TweetService.getSavedTweets(username, lastId)
-          .then((response) => {
-            if (response && response.length > 0) {
-              setSavedTweets(prev => [...prev, ...response]);
-              setLastId(response[response.length - 1].id);
-            }
-          })
-          .catch(err => console.error("Error loading more tweets:", err))
-          .finally(() => {
-            setIsLoading(false);
+        if (lastResponseScroll.length > 0) {
+          TweetService.getSavedTweets(username, lastId)
+            .then((response) => {
+              setLastResponseScroll(response);
+              if (response && response.length > 0) {
+                setSavedTweets(prev => [...prev, ...response]);
+                setLastId(response[response.length - 1].id);
+              }
+            })
+            .catch(err => console.error("Error loading more tweets:", err))
+            .finally(() => {
+              setIsLoading(false);
 
-            // Reactivar el handler después de un breve retraso
-            setTimeout(() => {
-              scrollHandlerActive.current = false;
-            }, 50);
-          });
+              // Reactivar el handler después de un breve retraso
+              setTimeout(() => {
+                scrollHandlerActive.current = false;
+              }, 50);
+            });
+        }
+        else{
+          setIsLoading(false);
+        }
       }
     };
 

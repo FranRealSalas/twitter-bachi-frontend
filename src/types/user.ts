@@ -25,13 +25,6 @@ export type UserResponseDTO = {
     followerCount: number;
 }
 
-export type UserMessage = {
-    id:number;
-    username: string;
-    profilePhoto: string;
-    editableName: string;
-}
-
 export type LoggedUser = {
     username: string;
     editableName: string;
