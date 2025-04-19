@@ -1,21 +1,11 @@
 import axiosInstance from "@/lib/axios";
 import { Chat, ChatResponseDTO } from "@/types/chat";
+import { Pageable } from "@/types/pageable";
 
 const ChatService = {
-    async createChat(usersId: number[]): Promise<Chat> {
+    async getChats(page:number): Promise<Pageable<ChatResponseDTO>> {
         return new Promise((resolve, reject) => {
-            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats`, { usersId })
-                .then(response => {
-                    resolve(response.data);
-                })
-                .catch(error => {
-                    reject(error);
-                });
-        });
-    },
-    async getChats(id:number|null): Promise<ChatResponseDTO[]> {
-        return new Promise((resolve, reject) => {
-            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats${id ? `?id=${id}` : ''}`)
+            axiosInstance.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats?page=${page}`)
                 .then(response => {
                     resolve(response.data);
                 })
@@ -23,6 +13,14 @@ const ChatService = {
                     reject(error);
                 })
         })
+    },
+    async getChatByExactParticipants(usersIds: number[]): Promise<ChatResponseDTO> {
+        const params = new URLSearchParams();
+        usersIds.forEach(userId => params.append("usersIds", userId.toString()));
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}api/chats/by-participants?${params.toString()}`;
+    
+        const response = await axiosInstance.get(url);
+        return response.data;
     }
 }
 

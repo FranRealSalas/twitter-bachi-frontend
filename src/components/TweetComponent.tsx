@@ -34,6 +34,11 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
     async function handleEditTweet(e: any) {
         try {
             TweetService.editTweets(Tweet.id, e.content).then(() => {
+                Swal.fire({
+                    title: "Exitoso!",
+                    text: "El tweet fue editado.",
+                    icon: "success"
+                });
                 TweetService.getTweets().then((response) => {
                     setTweets && setTweets(response);
                     setTimeout(() => {
@@ -44,6 +49,13 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                     }, 100)
                     reset();
                 })
+            })
+            .catch((error)=>{
+                Swal.fire({
+                    title: "Error",
+                    text: error || "No se pudo editar el tweet.",
+                    icon: "error",
+                });
             })
         }
         catch (error) {
@@ -154,12 +166,7 @@ function TweetComponent({ Tweet, setTweets }: { Tweet: TweetResponseDTO, setTwee
                                                         {...register("content")}
                                                         defaultValue={selectedTweet?.content || ""}
                                                     />
-                                                    <button type="submit" onClick={() =>
-                                                        Swal.fire({
-                                                            title: "Exitoso!",
-                                                            text: "El tweet fue editado.",
-                                                            icon: "success"
-                                                        })}>Confirmar</button>
+                                                    <button type="submit" onClick={() => console.log("editar")}>Confirmar</button>
                                                 </form>
                                             </div>
                                         </PostModal>

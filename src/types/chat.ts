@@ -11,7 +11,5 @@ export type Chat = {
 export type ChatResponseDTO = {
     id: number;
     users: UserResponseDTO[];
-    messages: Message[];
     lastMessage: MessageResponseDTO;
-    date: Date;
 }

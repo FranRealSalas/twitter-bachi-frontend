@@ -1,36 +1,21 @@
-import React, { use, useEffect, useRef, useState } from 'react';
-import ChatComponent from './ChatComponent';
-import MessageComponent from './MessageComponent';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserResponseDTO } from '@/types/user';
 import UserService from '@/services/UserService';
-import { Chat, ChatResponseDTO } from '@/types/chat';
-import Modal from './modals/Modal';
-import UserSearchComponent from './UserSearchComponent';
-import ChatService from '@/services/ChatService';
+import { ChatResponseDTO } from '@/types/chat';
 import { useForm } from 'react-hook-form';
-import { Message, MessageResponseDTO } from '@/types/message';
+import { MessageResponseDTO } from '@/types/message';
 import MessageService from '@/services/MessageService';
+import CreateChatComponent from './CreateChatComponent';
+import ChatListComponent from './ChatListComponent';
+import MessageListComponent from './MessageListComponent';
 
 const ChatMenuComponent = () => {
     const [chatMenuOpen, setChatMenuOpen] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
     const [loggedUser, setLoggedUser] = useState<UserResponseDTO | undefined>();
     const [currentChat, setCurrentChat] = useState<ChatResponseDTO>();
-    const [selectUserForChat, setSelectUserForChat] = useState(false)
-    const [allUsersForChat, setAllUsersForChat] = useState<UserResponseDTO[] | null>(null);
-    const [allChats, setAllChats] = useState<ChatResponseDTO[]>([]);
     const { register, handleSubmit } = useForm<MessageResponseDTO>();
-    const [messages, setMessages] = useState<MessageResponseDTO[]>([]);
-    const [lastIdMessages, setLastIdMessages] = useState<number | null>(null);
-    const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-    const scrollHandlerActiveMessages = useRef(false);
-    const scrollContainerMessagesRef = useRef<HTMLDivElement>(null);
-    const [lastIdChats, setLastIdChats] = useState<number | null>(null);
-    const [isLoadingChats, setIsLoadingChats] = useState(false);
-    const scrollHandlerActiveChats = useRef(false);
-    const scrollContainerChatsRef = useRef<HTMLDivElement>(null);
-    const [lastResponseChatScroll, setLastResponseChatScroll] = useState<ChatResponseDTO[]>([]);
-    const [lastResponseMessageScroll, setLastResponseMessageScroll] = useState<MessageResponseDTO[]>([]);
+    const [selectUserForChat, setSelectUserForChat] = useState(false);
 
     useEffect(() => {
         UserService.getLoggedUser().then((response) => {
@@ -38,212 +23,14 @@ const ChatMenuComponent = () => {
         })
     }, []);
 
-    useEffect(() => {
-        UserService.getAllUsers().then((response) => {
-            setAllUsersForChat(response);
-        });
-    }, []);
-
-    // Cargar chats iniciales
-    useEffect(() => {
-        const fetchInitialChats = async () => {
-            if (!chatMenuOpen) return;
-
-            try {
-                setIsLoadingChats(true);
-                const response = await ChatService.getChats(null);
-                if (response && response.length > 0) {
-                    setAllChats(response);
-                    setLastIdChats(response[response.length - 1].id);
-                    setLastResponseChatScroll(response);
-                }
-            } catch (error) {
-                console.error('Error loading initial chats:', error);
-            } finally {
-                setIsLoadingChats(false);
-            }
-        };
-
-        fetchInitialChats();
-    }, [chatMenuOpen]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollContainer = scrollContainerChatsRef.current;
-
-            if (scrollContainer) {
-                const scrollTop = scrollContainer.scrollTop;
-                const clientHeight = scrollContainer.clientHeight;
-                const scrollHeight = scrollContainer.scrollHeight;
-
-                // Verificar si estamos cerca del principio
-                const isNearBottom = scrollHeight - scrollTop - clientHeight <= 50; // Si estamos a menos de 50px del final
-
-                // Solo cargar más chats si estamos cerca del principio y no estamos ya cargando
-                if (isNearBottom && !isLoadingChats && lastIdChats && !scrollHandlerActiveChats.current) {
-                    scrollHandlerActiveChats.current = true; // Evitar múltiples disparos
-
-                    setIsLoadingChats(true);
-                    // Llamada para cargar más chats
-                    if (lastResponseChatScroll.length > 0) {
-                        ChatService.getChats(lastIdChats)
-                            .then((response) => {
-                                setLastResponseChatScroll(response);
-                                if (response && response.length > 0) {
-                                    // Añadir los chats nuevos al final
-                                    setAllChats((prev) => [...prev, ...response]);
-                                    setLastIdChats(response[response.length - 1].id);
-                                }
-                            })
-                            .catch((err) => console.error("Error cargando más chats:", err))
-                            .finally(() => {
-                                setIsLoadingChats(false);
-
-                                // Reactivar el handler después de un breve retraso
-                                setTimeout(() => {
-                                    scrollHandlerActiveChats.current = false;
-                                }, 50);
-                            });
-                    }
-                    else {
-                        setIsLoadingChats(false);
-                    }
-                }
-            }
-        };
-
-        if (scrollContainerChatsRef.current) {
-            scrollContainerChatsRef.current.addEventListener('scroll', handleScroll);
-        }
-
-        // Limpiar el event listener cuando el componente se desmonte
-        return () => {
-            if (scrollContainerChatsRef.current) {
-                scrollContainerChatsRef.current.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, [isLoadingChats, lastIdChats]); // Asegurarnos de que las dependencias estén bien definidas
-
-    // Cargar mensajes iniciales
-    useEffect(() => {
-        const fetchInitialMessages = async () => {
-            if (!currentChat) return; // No hacer nada si no hay un chat seleccionado
-
-            try {
-                setIsLoadingMessages(true);
-                const response = await MessageService.getAllMessagesByChatId(currentChat.id, null);
-                if (response && response.length > 0) {
-                    setMessages(response);
-                    setLastIdMessages(response[response.length - 1].id);
-                    setLastResponseMessageScroll(response);
-                }
-            } catch (error) {
-                console.error("Error loading initial messages:", error);
-            } finally {
-                setIsLoadingMessages(false);
-            }
-        };
-
-        fetchInitialMessages();
-    }, [currentChat]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const scrollContainerMessages = scrollContainerMessagesRef.current;
-
-            if (scrollContainerMessages) {
-                // Obtenemos el desplazamiento y las dimensiones del contenedor
-                const scrollTop = scrollContainerMessages.scrollTop;
-
-                // Verificamos si estamos cerca del principio
-                const isNearTop = scrollTop <= 50; // Si estamos a menos de 50px del principio
-
-                // Solo cargar más mensajes si estamos cerca del principio y no estamos ya cargando
-                if (isNearTop && !isLoadingMessages && lastIdMessages && !scrollHandlerActiveMessages.current && currentChat) {
-                    scrollHandlerActiveMessages.current = true; // Evitar múltiples disparos
-
-                    setIsLoadingMessages(true);
-                    if (lastResponseMessageScroll.length > 0) {
-                        MessageService.getAllMessagesByChatId(currentChat.id, lastIdMessages)
-                            .then((response) => {
-                                setLastResponseMessageScroll(response);
-                                if (response && response.length > 0) {
-                                    setMessages(prev => [...response, ...prev]);
-                                    setLastIdMessages(response[response.length - 1].id);
-                                }
-                            })
-                            .catch(err => console.error("Error loading more messages:", err))
-                            .finally(() => {
-                                setIsLoadingMessages(false);
-
-                                // Reactivar el handler después de un breve retraso
-                                setTimeout(() => {
-                                    scrollHandlerActiveMessages.current = false;
-                                }, 50);
-                            });
-                    }
-                    else {
-                        setIsLoadingMessages(false);
-                    }
-                }
-            }
-        };
-
-        // Solo agregar el event listener si tenemos un currentChat y tenemos un lastIdMessages
-        if (scrollContainerMessagesRef.current) {
-            scrollContainerMessagesRef.current.addEventListener('scroll', handleScroll);
-        }
-
-        // Limpiar event listener cuando el componente se desmonte
-        return () => {
-            if (scrollContainerMessagesRef.current) {
-                scrollContainerMessagesRef.current.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, [isLoadingMessages, lastIdMessages, currentChat]);
-
-    useEffect(() => {
-        // Solo hacer esto cuando el chat esté abierto
-        if (chatOpen) {
-            const scrollContainerMessages = scrollContainerMessagesRef.current;
-
-            // Asegurarse de que el contenedor del scroll esté disponible
-            if (scrollContainerMessages) {
-                // Usamos un pequeño retraso para asegurarnos de que los mensajes se hayan renderizado
-                setTimeout(() => {
-                    // Desplazar al final
-                    scrollContainerMessages.scrollTop = scrollContainerMessages.scrollHeight;
-                }, 50);
-            }
-        }
-    }, [chatOpen]);
-
+    //Crear Mensajes
     const handleCreateMessage = (e: any) => {
-        MessageService.createMessage(e.content, loggedUser, currentChat?.id);
+        MessageService.createMessage(e.content, loggedUser, currentChat?.id, currentChat?.users.map(user => user.id)!);
     }
 
     return (
         <div>
-            <div className='flex items-start'>
-                <Modal open={selectUserForChat} setOpen={setSelectUserForChat}>
-                    {
-                        allUsersForChat ?
-                            allUsersForChat.map((user) => (
-                                <div key={user.id}
-                                    onClick={() => {
-                                        ChatService.createChat([user.id]).then((response) => {
-                                            console.log("chat creado")
-                                        })
-                                    }}
-                                >
-                                    <UserSearchComponent editableName={user.editableName} username={user.username}></UserSearchComponent>
-                                </div>
-                            ))
-                            :
-                            <></>
-                    }
-                </Modal>
-            </div>
+            <CreateChatComponent loggedUser={loggedUser} setChatOpen={setChatOpen} selectUserForChat={selectUserForChat} setSelectUserForChat={setSelectUserForChat} setCurrentChat={setCurrentChat}></CreateChatComponent>
             {chatMenuOpen ? (
                 <div className='border border-b-0 border-gray-400 rounded-t-2xl w-96 h-96'>
                     <div className='h-full flex flex-col justify-between'>
@@ -292,17 +79,7 @@ const ChatMenuComponent = () => {
                             <div className='h-full'>
                                 {chatOpen ? (
                                     <div className='h-full flex flex-col justify-between'>
-                                        <div className='max-h-72 flex flex-col gap-2 overflow-y-auto scrollbar scrollbar-track-black scrollbar-thumb-customGrayChat py-3' ref={scrollContainerMessagesRef}>
-                                            {
-                                                messages ? (
-                                                    messages.sort((a, b) => a.id - b.id).map((message) => (
-                                                        <div key={`${message.id}`}>
-                                                            <MessageComponent loggedUser={loggedUser} sender={message.sender} text={message.content} />
-                                                        </div>
-                                                    ))
-                                                ) : null
-                                            }
-                                        </div>
+                                        <MessageListComponent chatOpen={chatOpen} currentChat={currentChat} loggedUser={loggedUser} setCurrentChat={setCurrentChat}></MessageListComponent>
                                         <div className='w-full border-t border-gray-400 flex justify-center items-center p-2'>
                                             <div className='flex flex-row justify-center items-center gap-4 bg-customGrayChat w-full rounded-2xl px-3 py-1'>
                                                 <div className='flex flex-row gap-1'>
@@ -338,22 +115,7 @@ const ChatMenuComponent = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className='h-full flex flex-col'>
-                                        <div className='max-h-80 flex flex-col gap-2 overflow-y-auto scrollbar scrollbar-track-black scrollbar-thumb-customGrayChat py-3' ref={scrollContainerChatsRef}>
-                                            {
-                                                allChats ? (
-                                                    allChats.sort((a, b) => b.id - a.id).map((chat) => (
-                                                        <div key={`${chat.id}`}
-                                                            onClick={() => {
-                                                                setCurrentChat(chat)
-                                                            }}>
-                                                            <ChatComponent setOpenChat={setChatOpen} chat={chat} loggedUser={loggedUser} />
-                                                        </div>
-                                                    ))
-                                                ) : null
-                                            }
-                                        </div>
-                                    </div>
+                                    <ChatListComponent chatMenuOpen={chatMenuOpen} loggedUser={loggedUser} setChatOpen={setChatOpen} setCurrentChat={setCurrentChat}></ChatListComponent>
                                 )}
                             </div>
                         </div>
