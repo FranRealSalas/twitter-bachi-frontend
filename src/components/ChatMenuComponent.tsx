@@ -8,6 +8,7 @@ import MessageService from '@/services/MessageService';
 import CreateChatComponent from './CreateChatComponent';
 import ChatListComponent from './ChatListComponent';
 import MessageListComponent from './MessageListComponent';
+import ChatService from '@/services/ChatService';
 
 const ChatMenuComponent = () => {
     const [chatMenuOpen, setChatMenuOpen] = useState(false);
@@ -25,7 +26,14 @@ const ChatMenuComponent = () => {
 
     //Crear Mensajes
     const handleCreateMessage = (e: any) => {
-        MessageService.createMessage(e.content, loggedUser, currentChat?.id, currentChat?.users.map(user => user.id)!);
+        MessageService.createMessage(e.content, currentChat?.id, currentChat?.users.map(user => user.id)!).then((response) => {
+            if (!currentChat?.id) {
+                if (!currentChat || !currentChat.users) return;
+                ChatService.getChatByExactParticipants(currentChat.users.map(user => user.id)).then((chat) => {
+                    setCurrentChat(chat);
+                })
+            }
+        })
     }
 
     return (
@@ -50,7 +58,15 @@ const ChatMenuComponent = () => {
                                         :
                                         <></>
                                     }
-                                    <h1 className='text-lg'>{chatOpen ? currentChat?.users[1].editableName : "Mensajes"}</h1>
+                                    <h1 className='text-lg'>
+                                        {chatOpen
+                                            ? currentChat?.users[1].username !== loggedUser?.username
+                                                ? currentChat?.users[1].editableName || currentChat?.users[1].username
+                                                : currentChat?.users[0].editableName || currentChat?.users[0].username
+                                            : "Mensajes"
+                                        }
+                                    </h1>
+
                                 </div>
                                 <div className='flex gap-3'>
                                     <button onClick={() =>

@@ -9,12 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.1.1",
+    "@types/sockjs-client": "^1.5.4",
     "axios": "^1.7.7",
     "next": "^15.0.1",
     "next-auth": "^4.24.10",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.1",
+    "sockjs-client": "^1.6.1",
+    "stomp-client": "^0.9.0",
     "sweetalert2": "^11.14.5"
   },
   "devDependencies": {

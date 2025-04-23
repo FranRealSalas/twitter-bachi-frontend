@@ -5,6 +5,8 @@ import { UserResponseDTO } from "@/types/user";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import MessageComponent from "./MessageComponent";
 import ChatService from "@/services/ChatService";
+import SockJS from "sockjs-client";
+import { CompatClient, IFrame, Stomp } from "@stomp/stompjs";
 
 function MessageListComponent({ currentChat, chatOpen, loggedUser, setCurrentChat }: { currentChat: ChatResponseDTO | undefined, chatOpen: boolean, loggedUser: UserResponseDTO | undefined, setCurrentChat: Dispatch<SetStateAction<ChatResponseDTO | undefined>> }) {
     const [messages, setMessages] = useState<MessageResponseDTO[]>([]);
@@ -13,6 +15,27 @@ function MessageListComponent({ currentChat, chatOpen, loggedUser, setCurrentCha
     const scrollHandlerActiveMessages = useRef(false);
     const scrollContainerMessagesRef = useRef<HTMLDivElement>(null);
     const [lastResponseMessageScroll, setLastResponseMessageScroll] = useState<MessageResponseDTO[]>([]);
+    const [loadedMessages, setLoadedMessages] = useState(false);
+
+    useEffect(() => {
+        const stompClient = Stomp.over(() => new SockJS(`${process.env.NEXT_PUBLIC_BACKEND_URL}ws`));
+
+        if (currentChat && currentChat.id) {
+
+            stompClient.debug = () => { };
+            stompClient.reconnect_delay = 5000;
+            stompClient.connect({}, function (frame: any) {
+                stompClient.subscribe(`/topic/messages/${currentChat.id}`, function (message) {
+                    setMessages((previousMessages) => [...previousMessages, JSON.parse(message.body) as MessageResponseDTO])
+                }, {});
+            }, function (error: IFrame) {
+            });
+        }
+
+        return () => {
+            stompClient?.disconnect();
+        };
+    }, [currentChat])
 
     useEffect(() => {
         const fetchInitialMessages = async () => {
@@ -23,25 +46,32 @@ function MessageListComponent({ currentChat, chatOpen, loggedUser, setCurrentCha
 
                 // Si no tenemos el chat.id, lo resolvemos
                 if (!currentChat.id) {
-                    const resolvedChat = await ChatService.getChatByExactParticipants(currentChat.users.map(user => user.id));
+                    ChatService.getChatByExactParticipants(currentChat.users.map(user => user.id)).then((resolvedChat) => {
+                        setCurrentChat(resolvedChat);
 
-                    setCurrentChat(resolvedChat);
+                        MessageService.getAllMessagesByChatId(resolvedChat.id, null).then((response) => {
+                            if (response && response.length > 0) {
+                                setMessages(response);
+                                setLastIdMessages(response[response.length - 1].id);
+                                setLastResponseMessageScroll(response);
+                            }
+                            setLoadedMessages(true);
+                        })
+                    })
+                        .catch((error) => {
 
-                    const response = await MessageService.getAllMessagesByChatId(resolvedChat.id, null);
-                    if (response && response.length > 0) {
-                        setMessages(response);
-                        setLastIdMessages(response[response.length - 1].id);
-                        setLastResponseMessageScroll(response);
-                    }
-                    return; // Ya cargaste los mensajes
+                        })
                 }
-
-                // Si ya tenemos chat.id, cargamos directamente
-                const response = await MessageService.getAllMessagesByChatId(currentChat.id, null);
-                if (response && response.length > 0) {
-                    setMessages(response);
-                    setLastIdMessages(response[response.length - 1].id);
-                    setLastResponseMessageScroll(response);
+                else {
+                    // Si ya tenemos chat.id, cargamos directamente
+                    MessageService.getAllMessagesByChatId(currentChat.id, null).then((response) => {
+                        if (response && response.length > 0) {
+                            setMessages(response);
+                            setLastIdMessages(response[response.length - 1].id);
+                            setLastResponseMessageScroll(response);
+                        }
+                        setLoadedMessages(true);
+                    })
                 }
             } catch (error) {
                 console.error("Error loading initial messages:", error);

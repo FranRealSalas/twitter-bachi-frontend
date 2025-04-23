@@ -66,7 +66,7 @@ function CreateChatComponent({ loggedUser, setChatOpen, selectUserForChat, setSe
                                                         <div key={user.id}
                                                             onClick={() => {
                                                                 // @ts-ignore
-                                                                setCurrentChat({ users: [{ id: loggedUser.id }, { id: user.id, editableName: user.editableName }] })
+                                                                setCurrentChat({ users: [{ id: loggedUser.id, username: loggedUser.username, editableName: loggedUser.editableName }, { id: user.id, editableName: user.editableName, username: user.username }] })
                                                                 setChatOpen(true)
                                                                 setSelectUserForChat(false)
                                                             }}
@@ -92,7 +92,7 @@ function CreateChatComponent({ loggedUser, setChatOpen, selectUserForChat, setSe
                                                     <div key={user.id}
                                                         onClick={() => {
                                                             // @ts-ignore
-                                                            setCurrentChat({ users: [{ id: loggedUser.id }, { id: user.id, editableName: user.editableName }] })
+                                                            setCurrentChat({ users: [{ id: loggedUser.id, editableName: loggedUser.editableName, username: loggedUser.username }, { id: user.id, editableName: user.editableName, username: user.username }] })
                                                             setChatOpen(true)
                                                             setSelectUserForChat(false)
                                                         }}

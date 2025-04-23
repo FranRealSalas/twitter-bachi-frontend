@@ -3,9 +3,9 @@ import { Message, MessageResponseDTO } from "@/types/message";
 import { UserResponseDTO } from "@/types/user";
 
 const MessageService = {
-    async createMessage(content: string, sender: UserResponseDTO | undefined, chatId: number | undefined, usersId: number[]): Promise<Message> {
+    async createMessage(content: string, chatId: number | undefined, usersId: number[]): Promise<Message> {
         return new Promise((resolve, reject) => {
-            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/messages`, { content, sender, chatId, chatCreationRequestDTO: { usersId } })
+            axiosInstance.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}api/messages`, { content, chatId, chatCreationRequestDTO: { usersId } })
                 .then(response => {
                     resolve(response.data);
                 })
